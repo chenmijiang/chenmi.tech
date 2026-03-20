@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title desc">
+  <title id="title">ChenMi avatar</title>
+  <desc id="desc">Abstract avatar with the initials CM.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="200" fill="url(#bg)" />
+  <circle cx="200" cy="150" r="72" fill="#e5eefc" opacity="0.95" />
+  <path d="M95 328c18-56 60-92 105-92s87 36 105 92" fill="#e5eefc" opacity="0.95" />
+  <text x="200" y="360" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="42" font-weight="700" fill="#bfdbfe">CM</text>
+</svg>
