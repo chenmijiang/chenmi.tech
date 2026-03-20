@@ -1,10 +1,10 @@
-# Peter Steinberger's Personal Website
+# chenmi's Personal Website
 
-This is the source code for my personal website, built with [Astro](https://astro.build) and deployed on [Vercel](https://vercel.com).
+This is the source code for chenmi's personal website, built with [Astro](https://astro.build) and deployed on [Vercel](https://vercel.com).
 
 ## About
 
-I'm Peter Steinberger, an iOS developer, entrepreneur, and open source contributor. This website hosts my personal blog and information about my work.
+I'm chenmi, a full-stack developer focused on scalable web applications, practical tooling, and AI-assisted workflows. This website hosts my writing, notes, and project updates.
 
 ## Project Structure
 
@@ -17,7 +17,7 @@ I'm Peter Steinberger, an iOS developer, entrepreneur, and open source contribut
 │   ├── components/      # Reusable UI components
 │   │   └── ui/          # React components
 │   ├── content/         # Content collections
-│   │   └── blog/        # Blog posts in Markdown format (organized by year)
+│   │   └── blog/ # Blog posts in Markdown format (organized by year)
 │   ├── layouts/         # Page layouts and templates
 │   ├── pages/           # Routes and pages
 │   ├── styles/          # Global styles and CSS
@@ -31,12 +31,12 @@ I'm Peter Steinberger, an iOS developer, entrepreneur, and open source contribut
 
 ## Commands
 
-| Command                | Action                                      |
-| :--------------------- | :------------------------------------------ |
-| `npm install`          | Installs dependencies                       |
-| `npm run dev`          | Starts local dev server at `localhost:4321` |
-| `npm run build`        | Build the production site to `./dist/`      |
-| `npm run preview`      | Preview the build locally, before deploying |
+| Command           | Action                                      |
+| :---------------- | :------------------------------------------ |
+| `npm install`     | Installs dependencies                       |
+| `npm run dev`     | Starts local dev server at `localhost:4321` |
+| `npm run build`   | Build the production site to `./dist/`      |
+| `npm run preview` | Preview the build locally, before deploying |
 
 ## Deployment
 
@@ -51,6 +51,6 @@ This repository uses dual licensing:
 
 See the [LICENSE](LICENSE) file for full details.
 
-## Special Thanks
+## Credits
 
-Special thanks to [Sat Naing](https://github.com/satnaing) for creating the excellent [AstroPaper theme](https://astro-paper.pages.dev/) that served as the foundation for this website. Their thoughtful design and clean architecture made it a joy to build upon.
+This site started from an open-source personal site reference and has been adapted into chenmi's own publishing setup.

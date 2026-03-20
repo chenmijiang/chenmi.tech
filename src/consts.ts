@@ -32,11 +32,11 @@ interface Site {
 // Site configuration
 export const SITE: Site = {
   website: "https://chenmi.tech/",
-  author: "ChenMi",
+  author: "chenmi",
   profile: "https://chenmi.tech/about",
   desc: "Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.",
-  title: "ChenMi",
-  ogImage: "chen-mi-avatar.svg",
+  title: "chenmi",
+  ogImage: "chen-mi-avatar.jpg",
   lightAndDarkMode: true,
   postPerIndex: 10,
   postPerPage: 10,

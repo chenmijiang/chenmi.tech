@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async () => {
-  const markdownContent = `# ChenMi
+  const markdownContent = `# chenmi
 
 Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.
 

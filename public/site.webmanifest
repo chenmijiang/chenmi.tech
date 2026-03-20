@@ -1,6 +1,6 @@
 {
-  "name": "ChenMi",
-  "short_name": "ChenMi",
+  "name": "chenmi",
+  "short_name": "chenmi",
   "description": "Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.",
   "icons": [
     {

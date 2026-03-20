@@ -107,10 +107,10 @@ export default defineConfig({
     react(),
     AstroPWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "chen-mi-avatar.svg"],
+      includeAssets: ["favicon.ico", "chen-mi-avatar.jpg"],
       manifest: {
-        name: "ChenMi",
-        short_name: "ChenMi",
+        name: "chenmi",
+        short_name: "chenmi",
         description: SITE.desc,
         theme_color: "#006cac",
         background_color: "#fdfdfd",
@@ -125,15 +125,15 @@ export default defineConfig({
             type: "image/x-icon",
           },
           {
-            src: "chen-mi-avatar.svg",
+            src: "chen-mi-avatar.jpg",
             sizes: "192x192",
-            type: "image/svg+xml",
+            type: "image/jpeg",
             purpose: "any",
           },
           {
-            src: "chen-mi-avatar.svg",
+            src: "chen-mi-avatar.jpg",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/jpeg",
             purpose: "any maskable",
           },
         ],

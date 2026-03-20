@@ -8,9 +8,9 @@
   "redirects": [
     {
       "source": "/:path*.md",
-      "has": [{ "type": "host", "value": "steipete.me" }],
+      "has": [{ "type": "host", "value": "chenmi.tech" }],
       "missing": [{ "type": "header", "key": "accept", "value": "(?i).*text/markdown.*" }],
-      "destination": "https://steipete.md/:path*",
+      "destination": "https://chenmi.md/:path*",
       "permanent": false
     },
     {
@@ -41,17 +41,17 @@
     },
     {
       "source": "/blog/a-new-beginning/",
-      "destination": "/posts/finding-my-spark-again",
+      "destination": "/posts/2026/hello-chenmi-tech",
       "permanent": true
     },
     {
       "source": "/posts/llm-codes-transform-developer-docs",
-      "destination": "/posts/2025/llm-codes-transform-developer-docs",
+      "destination": "/posts/2026/building-this-site",
       "permanent": true
     },
     {
       "source": "/posts/understanding-codebases-with-ai-gemini-workflow",
-      "destination": "/posts/2025/understanding-codebases-with-ai-gemini-workflow",
+      "destination": "/posts/2026/hello-chenmi-tech",
       "permanent": true
     },
     {
@@ -59,10 +59,10 @@
       "has": [
         {
           "type": "host",
-          "value": "^(?!(steipete\\.me|www\\.steipete\\.me|steipete\\.md|www\\.steipete\\.md|.*\\.vercel\\.app|.*\\.friendship\\.dev|.*\\.amantus\\.dev|.*\\.sweetistics\\.com)).*$"
+          "value": "^(?!(chenmi\\.tech|www\\.chenmi\\.tech|chenmi\\.md|www\\.chenmi\\.md|.*\\.vercel\\.app)).*$"
         }
       ],
-      "destination": "https://steipete.me/:path*",
+      "destination": "https://chenmi.tech/:path*",
       "permanent": true
     }
   ],
@@ -141,7 +141,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self' https://steipete.me https://*.vercel.app https://*.sweetistics.com https://platform.twitter.com https://syndication.twitter.com https://player.vimeo.com https://vimeo.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://steipete.me https://*.vercel.app https://*.sweetistics.com https://platform.twitter.com https://cdn.syndication.twimg.com https://player.vimeo.com https://vercel.live https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://steipete.me https://*.vercel.app https://*.sweetistics.com https://platform.twitter.com; img-src 'self' data: https: blob: https://ghchart.rshah.org; font-src 'self' https://steipete.me https://*.vercel.app https://*.sweetistics.com; connect-src 'self' https://steipete.me https://*.vercel.app https://*.sweetistics.com https://platform.twitter.com https://player.vimeo.com https://vimeo.com https://vitals.vercel-insights.com https://va.vercel-scripts.com; media-src 'self' https://steipete.me https://*.vercel.app https://*.sweetistics.com https://player.vimeo.com https://vimeo.com; object-src 'none'; frame-ancestors 'none'; frame-src https://platform.twitter.com https://syndication.twitter.com https://player.vimeo.com https://vercel.live https://www.youtube.com https://youtube.com https://*.youtube.com https://www.youtube-nocookie.com https://*.youtube-nocookie.com; worker-src 'self' blob:"
+          "value": "default-src 'self' https://chenmi.tech https://*.vercel.app https://platform.twitter.com https://syndication.twitter.com https://player.vimeo.com https://vimeo.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://chenmi.tech https://*.vercel.app https://platform.twitter.com https://cdn.syndication.twimg.com https://player.vimeo.com https://vercel.live https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://chenmi.tech https://*.vercel.app https://platform.twitter.com; img-src 'self' data: https: blob: https://ghchart.rshah.org; font-src 'self' https://chenmi.tech https://*.vercel.app; connect-src 'self' https://chenmi.tech https://*.vercel.app https://platform.twitter.com https://player.vimeo.com https://vimeo.com https://vitals.vercel-insights.com https://va.vercel-scripts.com; media-src 'self' https://chenmi.tech https://*.vercel.app https://player.vimeo.com https://vimeo.com; object-src 'none'; frame-ancestors 'none'; frame-src https://platform.twitter.com https://syndication.twitter.com https://player.vimeo.com https://vercel.live https://www.youtube.com https://youtube.com https://*.youtube.com https://www.youtube-nocookie.com https://*.youtube-nocookie.com; worker-src 'self' blob:"
         }
       ]
     }
