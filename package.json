@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
-    "build:check": "astro check && astro build && pagefind --site dist",
+    "build": "astro build && pagefind --site dist --glob \"posts/**/index.html\" --root-selector \"#main-content\"",
+    "build:check": "astro check && astro build && pagefind --site dist --glob \"posts/**/index.html\" --root-selector \"#main-content\"",
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "scripts/deploy.sh",
@@ -51,7 +51,7 @@
   },
   "overrides": {
     "esbuild": "^0.25.5",
-    "vite": "^6.3.5"
+    "vite": "^6.4.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",

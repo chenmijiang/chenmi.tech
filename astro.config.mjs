@@ -10,6 +10,32 @@ import { remarkLazyLoadImages } from "./src/utils/remarkLazyLoadImages.mjs";
 import { SITE } from "./src/config";
 import AstroPWA from "@vite-pwa/astro";
 
+/**
+ * @param {import("rollup").RollupLog} warning
+ * @param {(warning: import("rollup").RollupLog) => void} defaultHandler
+ */
+function handleRollupWarning(warning, defaultHandler) {
+  const isAstroUnusedRemoteHelperWarning =
+    warning.code === "UNUSED_EXTERNAL_IMPORT" &&
+    warning.exporter === "@astrojs/internal-helpers/remote" &&
+    Array.isArray(warning.names) &&
+    warning.names.every((name) =>
+      ["matchHostname", "matchPathname", "matchPort", "matchProtocol"].includes(
+        name,
+      ),
+    ) &&
+    Array.isArray(warning.ids) &&
+    warning.ids.every((id) =>
+      id.includes("node_modules/astro/dist/assets/"),
+    );
+
+  if (isAstroUnusedRemoteHelperWarning) {
+    return;
+  }
+
+  defaultHandler(warning);
+}
+
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
@@ -182,6 +208,11 @@ export default defineConfig({
     }),
   ],
   vite: {
+    build: {
+      rollupOptions: {
+        onwarn: handleRollupWarning,
+      },
+    },
     resolve: {
       alias: {
         "@": "/src",
