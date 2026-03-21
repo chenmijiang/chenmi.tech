@@ -338,7 +338,7 @@ Get locale and translate:
 const locale = Astro.currentLocale || defaultLocale;
 ```
 
-Replace "View source on GitHub" → `{t(lang, "footer.viewSource")}`.
+Replace "View source on GitHub" → `{t(locale, "footer.viewSource")}`.
 
 - [ ] **Step 4: Update `src/components/Header.astro`**
 
@@ -469,7 +469,34 @@ git commit -m "feat(i18n): add hreflang tags for SEO"
 
 ---
 
-## Task 8: Verify Build
+## Task 8: Update RSS Feed
+
+**Files:**
+- Modify: `src/pages/rss.xml.ts`
+
+- [ ] **Step 1: Update RSS feed for i18n**
+
+The RSS feed should include hreflang links. Update `src/pages/rss.xml.ts` to add alternate links:
+
+```typescript
+// Add after the <channel> element
+<atom:link href={`${SITE.website}rss.xml`} rel="self" type="application/rss+xml" />
+<atom:link href={`${SITE.website}en/rss.xml`} rel="alternate" type="application/rss+xml" hreflang="en" />
+<atom:link href={`${SITE.website}zh/rss.xml`} rel="alternate" type="application/rss+xml" hreflang="zh" />
+```
+
+Or if generating separate feeds per locale, configure accordingly.
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/pages/rss.xml.ts
+git commit -m "feat(i18n): add hreflang to RSS feed"
+```
+
+---
+
+## Task 9: Verify Build
 
 - [ ] **Step 1: Run build check**
 
@@ -500,4 +527,5 @@ Expected: No lint errors.
 | 5 | Datetime, Pagination, Footer, Header, 404 | Use t() for UI text |
 | 6 | index, posts, search, about pages | Page text translations |
 | 7 | Layout.astro | hreflang SEO tags |
-| 8 | - | Verify build |
+| 8 | rss.xml.ts | RSS feed hreflang |
+| 9 | - | Verify build |
