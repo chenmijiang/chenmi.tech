@@ -40,6 +40,16 @@ function handleRollupWarning(warning, defaultHandler) {
 export default defineConfig({
   site: SITE.website,
   trailingSlash: "never",
+  i18n: {
+    locales: ["en", "zh"],
+    defaultLocale: "en",
+    routing: {
+      prefixDefaultLocale: false,
+    },
+    fallback: {
+      zh: "en",
+    },
+  },
   markdown: {
     remarkPlugins: [
       remarkToc,
