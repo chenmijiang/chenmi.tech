@@ -6,13 +6,15 @@ import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import { SITE } from "@/config";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
 import Hr from "./Hr.astro";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
 import LinkButton from "./LinkButton.astro";
 
-const { pathname } = Astro.url;
-
-// Remove trailing slash from current pathname if exists
-const currentPath = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
+const locale = (Astro.currentLocale || defaultLocale) as typeof defaultLocale;
+const currentPath = Astro.url.pathname.replace(/^\/(en|zh)\//, "/");
 
 const isActive = (path: string) => {
   const currentPathArray = currentPath.split("/").filter((p) => p.trim());
@@ -28,7 +30,7 @@ const isActive = (path: string) => {
     href="#main-content"
     class="absolute -top-full left-16 z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
   >
-    Skip to content
+    {t(locale, "nav.skipToContent")}
   </a>
   <div
     id="nav-container"
@@ -68,8 +70,8 @@ const isActive = (path: string) => {
           ]}
         >
           <li class="col-span-2">
-            <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-              Posts
+            <a href={getRelativeLocaleUrl(locale, "posts")} class:list={{ "active-nav": isActive("/posts") }}>
+              {t(locale, "nav.blog")}
             </a>
           </li>
           <!-- <li class="col-span-2">
@@ -78,8 +80,8 @@ const isActive = (path: string) => {
             </a>
           </li> -->
           <li class="col-span-2">
-            <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-              About
+            <a href={getRelativeLocaleUrl(locale, "about")} class:list={{ "active-nav": isActive("/about") }}>
+              {t(locale, "nav.about")}
             </a>
           </li>
           {
@@ -104,7 +106,7 @@ const isActive = (path: string) => {
           }
           <li class="col-span-1 flex items-center justify-center">
             <LinkButton
-              href="/search"
+              href={getRelativeLocaleUrl(locale, "search")}
               class:list={[
                 "focus-outline flex p-3 sm:p-1",
                 { "[&>svg]:stroke-accent": isActive("/search") },
@@ -113,7 +115,7 @@ const isActive = (path: string) => {
               title="Search"
             >
               <IconSearch />
-              <span class="sr-only">Search</span>
+              <span class="sr-only">{t(locale, "nav.search")}</span>
             </LinkButton>
           </li>
           {
@@ -132,6 +134,9 @@ const isActive = (path: string) => {
               </li>
             )
           }
+          <li class="col-span-1 flex items-center justify-center">
+            <LanguageSwitcher />
+          </li>
         </ul>
       </nav>
     </div>
