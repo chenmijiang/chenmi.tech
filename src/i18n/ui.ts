@@ -5,6 +5,8 @@ export const ui = {
       about: "About",
       skipToContent: "Skip to content",
       search: "Search",
+      goBack: "Go back",
+      backToTop: "Back to Top",
     },
     pagination: {
       prev: "Prev",
@@ -57,6 +59,8 @@ export const ui = {
       about: "关于",
       skipToContent: "跳转到内容",
       search: "搜索",
+      goBack: "返回",
+      backToTop: "回到顶部",
     },
     pagination: {
       prev: "上一页",

@@ -15,6 +15,7 @@ import Tag from "@/components/Tag.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { defaultLocale, type Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 import { getPath } from "@/utils/getPath";
 import { calculateReadingTime } from "@/utils/readingTime";
 import { slugifyStr } from "@/utils/slugify";
@@ -27,6 +28,7 @@ export interface Props {
 const { post, posts } = Astro.props;
 
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const backToTopText = t(locale, "nav.backToTop");
 
 const getLocalePostUrl = (slug: string) => {
   const postPath = `/posts/${slug}`;
@@ -181,7 +183,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
         class="focus-outline py-1 whitespace-nowrap hover:opacity-75"
       >
         <IconChevronLeft class="inline-block rotate-90" />
-        <span>Back to Top</span>
+        <span>{backToTopText}</span>
       </button>
     </div>
 
