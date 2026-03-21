@@ -1,12 +1,15 @@
 # i18n Implementation Plan (URL Prefix Approach)
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add English/Chinese i18n support using Astro's built-in i18n routing with URL prefixes (`/en/` for English, `/zh/` for Chinese).
+**Goal:** Add English/Chinese i18n support using Astro's built-in i18n routing with URL prefixes (`/en/` for English default, `/zh/` for Chinese).
 
-**Architecture:** Astro native i18n routing + translation files. Middleware handles root path browser language detection redirect. Static build generates HTML for all locale routes.
+**Architecture:** 
+- `prefixDefaultLocale: false` - English has no prefix, Chinese uses `/zh/`
+- All internal links generated via `getRelativeLocaleUrl(locale, path)`
+- Static build generates HTML for all locale routes
 
-**Tech Stack:** Astro i18n routing, `Astro.currentLocale`, translation files, vanilla CSS/HTML.
+**Tech Stack:** Astro i18n routing, `Astro.currentLocale`, `getRelativeLocaleUrl`, translation files.
 
 ---
 
@@ -16,9 +19,8 @@
 src/
 ├── i18n/
 │   ├── ui.ts          # Translation strings (en, zh)
-│   └── utils.ts       # getLocale(), t() helpers
+│   └── utils.ts       # getLocalePath() for post URLs
 ├── middleware.js      # Root path redirect + blog redirect
-├── env.d.ts          # Astro.locals type
 └── components/
     └── LanguageSwitcher.astro  # Language toggle link
 ```
@@ -55,7 +57,6 @@ export const ui = {
     },
     search: {
       placeholder: "Search posts...",
-      noResults: "No results found",
     },
     notFound: {
       title: "Page Not Found",
@@ -85,7 +86,6 @@ export const ui = {
     },
     search: {
       placeholder: "搜索文章...",
-      noResults: "未找到结果",
     },
     notFound: {
       title: "页面未找到",
@@ -104,26 +104,20 @@ export const defaultLocale: Locale = "en";
 - [ ] **Step 2: Create `src/i18n/utils.ts`**
 
 ```typescript
-import { ui, defaultLocale, type Locale } from "./ui";
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
+import { defaultLocale } from "./ui";
 
-export function getLocale(lang: string | undefined): Locale {
-  if (lang && lang in ui) {
-    return lang as Locale;
+export function getLocalePath(locale: Locale, path: string): string {
+  if (locale === defaultLocale) {
+    return path.startsWith("/") ? path : `/${path}`;
   }
-  return defaultLocale;
+  return getRelativeLocaleUrl(locale, path);
 }
 
-export function t(locale: Locale, key: string): string {
-  const keys = key.split(".");
-  let value: unknown = ui[locale];
-  for (const k of keys) {
-    if (value && typeof value === "object" && k in value) {
-      value = (value as Record<string, unknown>)[k];
-    } else {
-      return key;
-    }
-  }
-  return typeof value === "string" ? value : key;
+export function getCurrentLocale(locale: string | undefined): Locale {
+  return (locale && locale in { en: true, zh: true }) 
+    ? locale as Locale 
+    : defaultLocale;
 }
 ```
 
@@ -131,17 +125,16 @@ export function t(locale: Locale, key: string): string {
 
 ```bash
 git add src/i18n/ui.ts src/i18n/utils.ts
-git commit -m "feat(i18n): add translation strings and utilities"
+git commit -m "feat(i18n): add translation strings and locale path utilities"
 ```
 
 ---
 
-## Task 2: Update Astro Config and Middleware
+## Task 2: Configure Astro i18n and Middleware
 
 **Files:**
 - Modify: `astro.config.mjs`
 - Modify: `src/middleware.js`
-- Modify: `src/env.d.ts`
 
 - [ ] **Step 1: Update `astro.config.mjs`**
 
@@ -160,26 +153,20 @@ i18n: {
 },
 ```
 
-- [ ] **Step 2: Update `src/env.d.ts`**
-
-```typescript
-/// <reference types="astro/client" />
-```
-
-(No changes needed - Astro.locals is already typed through Astro's types)
-
-- [ ] **Step 3: Update `src/middleware.js`**
+- [ ] **Step 2: Update `src/middleware.js`**
 
 ```javascript
 export const onRequest = async (context, next) => {
   const url = new URL(context.request.url);
 
-  // Redirect root to appropriate locale based on Accept-Language
+  // Redirect root to Chinese if browser prefers zh, else stay on English root
   if (url.pathname === "/" || url.pathname === "") {
     const acceptLanguage = context.request.headers.get("accept-language") || "";
-    const locale = acceptLanguage.toLowerCase().startsWith("zh") ? "zh" : "en";
-    const targetPath = locale === "en" ? "/en/" : "/zh/";
-    return context.redirect(targetPath, 302);
+    if (acceptLanguage.toLowerCase().startsWith("zh")) {
+      return context.redirect("/zh/", 302);
+    }
+    // English root - don't redirect
+    return next();
   }
 
   // Existing redirects
@@ -194,7 +181,7 @@ export const onRequest = async (context, next) => {
 };
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add astro.config.mjs src/middleware.js
@@ -224,16 +211,16 @@ git commit -m "feat(i18n): configure Astro i18n routing and middleware"
 ```astro
 ---
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
 import { defaultLocale } from "@/i18n/ui";
 
-const currentLocale = Astro.currentLocale || defaultLocale;
-const alternateLocale = currentLocale === "en" ? "zh" : "en";
-const currentPath = Astro.url.pathname;
+const currentLocale = (Astro.currentLocale || defaultLocale) as Locale;
+const alternateLocale: Locale = currentLocale === "en" ? "zh" : "en";
 
-// Replace locale prefix in path
-const alternatePath = currentPath.replace(/^\/(en|zh)\//, `/${alternateLocale}/`);
+// Get current path without locale prefix
+const currentPath = Astro.url.pathname.replace(/^\/(en|zh)\//, "/");
+const alternatePath = getRelativeLocaleUrl(alternateLocale, currentPath.slice(1));
 const alternateLabel = alternateLocale === "en" ? "English" : "中文";
-const currentLabel = currentLocale === "en" ? "English" : "中文";
 ---
 
 <a
@@ -256,19 +243,39 @@ git commit -m "feat(i18n): add LanguageSwitcher component"
 
 ---
 
-## Task 4: Integrate LanguageSwitcher into Header
+## Task 4: Update Header with Locale-Aware Links
 
 **Files:**
 - Modify: `src/components/Header.astro`
 
-- [ ] **Step 1: Add LanguageSwitcher after ThemeToggle**
+- [ ] **Step 1: Update Header imports and locale handling**
 
-Add import at top:
+Add imports:
 ```astro
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 ```
 
-Add LanguageSwitcher after the ThemeToggle `</li>`:
+Add locale variable:
+```astro
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const currentPath = Astro.url.pathname.replace(/^\/(en|zh)\//, "/");
+```
+
+Replace hardcoded nav links with locale-aware versions:
+- `/posts` → `{getRelativeLocaleUrl(locale, "posts")}`
+- `/about` → `{getRelativeLocaleUrl(locale, "about")}`
+- `/search` → `{getRelativeLocaleUrl(locale, "search")}`
+
+Replace hardcoded text:
+- "Posts" → `{t(locale, "nav.blog")}`
+- "About" → `{t(locale, "nav.about")}`
+- "Skip to content" → `{t(locale, "nav.skipToContent")}`
+- Search sr-only → `{t(locale, "nav.search")}`
+
+Add LanguageSwitcher after ThemeToggle `</li>`:
 ```astro
 <li class="col-span-1 flex items-center justify-center">
   <LanguageSwitcher />
@@ -279,21 +286,18 @@ Add LanguageSwitcher after the ThemeToggle `</li>`:
 
 ```bash
 git add src/components/Header.astro
-git commit -m "feat(i18n): integrate LanguageSwitcher in Header"
+git commit -m "feat(i18n): update Header with locale-aware links"
 ```
 
 ---
 
-## Task 5: Update Components to Use Translations
+## Task 5: Update Footer and Datetime Components
 
 **Files:**
-- Modify: `src/components/Datetime.astro`
-- Modify: `src/components/Pagination.astro`
 - Modify: `src/components/Footer.astro`
-- Modify: `src/components/Header.astro`
-- Modify: `src/pages/404.astro`
+- Modify: `src/components/Datetime.astro`
 
-- [ ] **Step 1: Update `src/components/Datetime.astro`**
+- [ ] **Step 1: Update `src/components/Footer.astro`**
 
 Add imports:
 ```astro
@@ -301,202 +305,285 @@ import { t } from "@/i18n/utils";
 import { defaultLocale } from "@/i18n/ui";
 ```
 
-Get current locale:
+Add locale:
 ```astro
-const locale = Astro.currentLocale || defaultLocale;
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+```
+
+Replace "View source on GitHub" → `{t(locale, "footer.viewSource")}`.
+
+- [ ] **Step 2: Update `src/components/Datetime.astro`**
+
+Add imports:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+```
+
+Add locale:
+```astro
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const publishedLabel = t(locale, "datetime.published");
 const updatedLabel = t(locale, "datetime.updated");
 ```
 
 Replace hardcoded "Published:" and "Updated:" with `{publishedLabel}` and `{updatedLabel}`.
 
-- [ ] **Step 2: Update `src/components/Pagination.astro`**
-
-Add imports:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-```
-
-Get locale and translate:
-```astro
-const locale = Astro.currentLocale || defaultLocale;
-```
-
-Replace "Prev" → `{t(locale, "pagination.prev")}` and "Next" → `{t(locale, "pagination.next")}`.
-
-- [ ] **Step 3: Update `src/components/Footer.astro`**
-
-Add imports:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-```
-
-Get locale and translate:
-```astro
-const locale = Astro.currentLocale || defaultLocale;
-```
-
-Replace "View source on GitHub" → `{t(locale, "footer.viewSource")}`.
-
-- [ ] **Step 4: Update `src/components/Header.astro`**
-
-Add imports and translate nav items:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const locale = Astro.currentLocale || defaultLocale;
-```
-
-Replace:
-- "Posts" → `{t(locale, "nav.blog")}`
-- "About" → `{t(locale, "nav.about")}`
-- "Skip to content" → `{t(locale, "nav.skipToContent")}`
-- Search sr-only text → `{t(locale, "nav.search")}`
-
-- [ ] **Step 5: Update `src/pages/404.astro`**
-
-Add imports:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-```
-
-Get locale and translate:
-```astro
-const locale = Astro.currentLocale || defaultLocale;
-```
-
-Replace title and description with `{t(locale, "notFound.title")}` and `{t(locale, "notFound.description")}`.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
-git add src/components/Datetime.astro src/components/Pagination.astro src/components/Footer.astro src/components/Header.astro src/pages/404.astro
-git commit -m "feat(i18n): update components to use translations"
+git add src/components/Footer.astro src/components/Datetime.astro
+git commit -m "feat(i18n): update Footer and Datetime components"
 ```
 
 ---
 
-## Task 6: Update Pages with Translations
+## Task 6: Update Pagination Component
+
+**Files:**
+- Modify: `src/components/Pagination.astro`
+
+- [ ] **Step 1: Update Pagination with locale-aware URLs**
+
+Add imports:
+```astro
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+```
+
+Add locale:
+```astro
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+```
+
+Replace:
+- "Prev" → `{t(locale, "pagination.prev")}`
+- "Next" → `{t(locale, "pagination.next")}`
+- `href={page.url.prev as string}` → `href={getRelativeLocaleUrl(locale, page.url.prev.toString().replace(/^\/(en|zh)\//, "/"))}`
+- `href={page.url.next as string}` → similar pattern
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/components/Pagination.astro
+git commit -m "feat(i18n): update Pagination with locale-aware links"
+```
+
+---
+
+## Task 7: Update Card and BackButton Components
+
+**Files:**
+- Modify: `src/components/Card.astro`
+- Modify: `src/components/BackButton.astro`
+
+- [ ] **Step 1: Update `src/components/Card.astro`**
+
+The Card component uses `getPath()` for links. Need to update to use locale-aware path.
+
+Add imports:
+```astro
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
+import { defaultLocale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
+import { getPath } from "@/utils/getPath";
+```
+
+Add locale and translate readingTime:
+```astro
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const readingTimeText = t(locale, "card.readingTime");
+```
+
+Update link href: currently uses `getPath(id, filePath)`, needs to become locale-aware. The post path from getPath needs locale prefix for zh.
+
+Create locale-aware path:
+```astro
+const postPath = getPath(id, filePath);
+const localePostPath = locale === defaultLocale 
+  ? postPath 
+  : getRelativeLocaleUrl(locale, postPath.replace(/^\//, ""));
+```
+
+Replace `href={getPath(id, filePath)}` with `href={localePostPath}`.
+
+Replace "min read" text with `{readingTimeText}`.
+
+- [ ] **Step 2: Update `src/components/BackButton.astro`**
+
+Check if BackButton has hardcoded links. If so, make locale-aware.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add src/components/Card.astro src/components/BackButton.astro
+git commit -m "feat(i18n): update Card and BackButton components"
+```
+
+---
+
+## Task 8: Update PostDetails Layout
+
+**Files:**
+- Modify: `src/layouts/PostDetails.astro`
+
+- [ ] **Step 1: Update PostDetails with locale-aware links**
+
+Add imports:
+```astro
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
+import { defaultLocale } from "@/i18n/ui";
+import { getPath } from "@/utils/getPath";
+```
+
+Add locale:
+```astro
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+```
+
+Update prev/next post links:
+- Current: `href={prevPost ? `/posts/${prevPost.slug}` : ''}`
+- New: Use `getRelativeLocaleUrl(locale, `posts/${prevPost.slug.replace(/.*\//, "")}`)}`
+
+Update back-to-top href if needed.
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/layouts/PostDetails.astro
+git commit -m "feat(i18n): update PostDetails with locale-aware links"
+```
+
+---
+
+## Task 9: Update Pages with Locale-Aware Links
 
 **Files:**
 - Modify: `src/pages/index.astro`
 - Modify: `src/pages/posts/index.astro`
 - Modify: `src/pages/search.astro`
+- Modify: `src/pages/404.astro`
 - Modify: `src/pages/about.md.ts`
 
 - [ ] **Step 1: Update `src/pages/index.astro`**
 
-Add imports and get locale:
+Add imports:
 ```astro
+import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
 import { t } from "@/i18n/utils";
 import { defaultLocale } from "@/i18n/ui";
-
-const locale = Astro.currentLocale || defaultLocale;
 ```
 
-Find and replace hardcoded English text:
-- "All Posts" / "Featured" / Hero section text → use `t(locale, "...")`
-- Month names like "March" in date formatting should be handled by `Datetime` component (already translated)
+Add locale:
+```astro
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+```
+
+Update links:
+- `/about` → `{getRelativeLocaleUrl(locale, "about")}`
+- `/posts` → `{getRelativeLocaleUrl(locale, "posts")}`
+- `/rss.xml` → `/rss.xml` (RSS doesn't need locale prefix)
+
+Update hardcoded text ("Featured", "All Posts", "RSS Feed") to use t().
 
 - [ ] **Step 2: Update `src/pages/posts/index.astro`**
 
-Add imports and get locale:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const locale = Astro.currentLocale || defaultLocale;
-```
-
-Translate page title and description.
+Add imports and locale, update page title/description if hardcoded.
 
 - [ ] **Step 3: Update `src/pages/search.astro`**
 
-Add imports and get locale:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
+Add imports and locale, update placeholder text.
 
-const locale = Astro.currentLocale || defaultLocale;
-```
+- [ ] **Step 4: Update `src/pages/404.astro`**
 
-Replace placeholder text with `{t(locale, "search.placeholder")}`.
+Add imports and locale, update title/description.
 
-Note: Pagefind UI itself cannot be translated easily - it's loaded from CDN. The placeholder text we control will be translated.
+- [ ] **Step 5: Update `src/pages/about.md.ts`**
 
-- [ ] **Step 4: Update `src/pages/about.md.ts`**
+Check if about page has any hardcoded links or text.
 
-This page uses a markdown layout. Add frontmatter translation if needed.
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/pages/index.astro src/pages/posts/index.astro src/pages/search.astro src/pages/about.md.ts
-git commit -m "feat(i18n): update pages with translations"
+git add src/pages/index.astro src/pages/posts/index.astro src/pages/search.astro src/pages/404.astro src/pages/about.md.ts
+git commit -m "feat(i18n): update pages with locale-aware links"
 ```
 
 ---
 
-## Task 7: Update Layout for SEO hreflang
+## Task 10: Update Layout for SEO
 
 **Files:**
 - Modify: `src/layouts/Layout.astro`
 
-- [ ] **Step 1: Add hreflang tags**
+- [ ] **Step 1: Update Layout with hreflang and html lang**
 
-After the `<head>` opening, add hreflang alternates:
-
-```astro
-<link rel="alternate" hreflang="en" href={new URL(Astro.url.pathname.replace(/^\/zh\//, "/en/"), Astro.url)} />
-<link rel="alternate" hreflang="zh" href={new URL(Astro.url.pathname.replace(/^\/en\//, "/zh/"), Astro.url)} />
-```
-
-Update html lang attribute:
+Update html tag:
 ```astro
 <html lang={Astro.currentLocale || "en"}>
+```
+
+Add hreflang alternates in `<head>`:
+```astro
+{(() => {
+  const pathname = Astro.url.pathname;
+  const enPath = pathname.replace(/^\/zh\//, "/");
+  const zhPath = pathname.startsWith("/zh/") 
+    ? pathname 
+    : `/zh${pathname}`;
+  return (
+    <>
+      <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.url)} />
+      <link rel="alternate" hreflang="zh" href={new URL(zhPath, Astro.url)} />
+    </>
+  );
+})()}
 ```
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add src/layouts/Layout.astro
-git commit -m "feat(i18n): add hreflang tags for SEO"
+git commit -m "feat(i18n): add hreflang tags and html lang to Layout"
 ```
 
 ---
 
-## Task 8: Update RSS Feed
+## Task 11: Update RSS Feed
 
 **Files:**
 - Modify: `src/pages/rss.xml.ts`
 
-- [ ] **Step 1: Update RSS feed for i18n**
+- [ ] **Step 1: Update RSS with locale-aware paths**
 
-The RSS feed should include hreflang links. Update `src/pages/rss.xml.ts` to add alternate links:
+The RSS feed should generate post links with proper locale paths. Update the `getPath` calls to include locale prefix when needed.
 
 ```typescript
-// Add after the <channel> element
-<atom:link href={`${SITE.website}rss.xml`} rel="self" type="application/rss+xml" />
-<atom:link href={`${SITE.website}en/rss.xml`} rel="alternate" type="application/rss+xml" hreflang="en" />
-<atom:link href={`${SITE.website}zh/rss.xml`} rel="alternate" type="application/rss+xml" hreflang="zh" />
-```
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLocale } from "@/i18n/ui";
 
-Or if generating separate feeds per locale, configure accordingly.
+// In the items mapping:
+items: sortedPosts.map(({ data, id, filePath }) => {
+  const postPath = getPath(id, filePath);
+  const localePath = getRelativeLocaleUrl(defaultLocale, postPath.replace(/^\//, ""));
+  return {
+    link: new URL(localePath, siteURL).toString(),
+    // ...
+  };
+}),
+```
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add src/pages/rss.xml.ts
-git commit -m "feat(i18n): add hreflang to RSS feed"
+git commit -m "feat(i18n): update RSS feed with locale-aware paths"
 ```
 
 ---
 
-## Task 9: Verify Build
+## Task 12: Verify Build
 
 - [ ] **Step 1: Run build check**
 
@@ -520,12 +607,15 @@ Expected: No lint errors.
 
 | Task | Files | Description |
 |------|-------|-------------|
-| 1 | ui.ts, utils.ts | Translation strings and helpers |
-| 2 | astro.config.mjs, middleware.js | Astro i18n routing config |
-| 3 | LanguageSwitcher.astro, IconGlobe.svg | Toggle button |
-| 4 | Header.astro | Integrate toggle in nav |
-| 5 | Datetime, Pagination, Footer, Header, 404 | Use t() for UI text |
-| 6 | index, posts, search, about pages | Page text translations |
-| 7 | Layout.astro | hreflang SEO tags |
-| 8 | rss.xml.ts | RSS feed hreflang |
-| 9 | - | Verify build |
+| 1 | ui.ts, utils.ts | Translation strings and locale path helpers |
+| 2 | astro.config.mjs, middleware.js | Astro i18n config and middleware |
+| 3 | LanguageSwitcher.astro, IconGlobe.svg | Language toggle |
+| 4 | Header.astro | Locale-aware nav links |
+| 5 | Footer.astro, Datetime.astro | Translation text |
+| 6 | Pagination.astro | Locale-aware pagination |
+| 7 | Card.astro, BackButton.astro | Locale-aware post links |
+| 8 | PostDetails.astro | Locale-aware prev/next links |
+| 9 | index, posts, search, 404, about pages | Page updates |
+| 10 | Layout.astro | hreflang SEO |
+| 11 | rss.xml.ts | RSS feed updates |
+| 12 | - | Verify build |
