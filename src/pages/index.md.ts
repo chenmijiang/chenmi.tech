@@ -1,14 +1,18 @@
+import { getRelativeLocaleUrl } from "astro:i18n";
 import type { APIRoute } from "astro";
+import { defaultLocale } from "@/i18n/ui";
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ currentLocale }) => {
+  const locale = currentLocale || defaultLocale;
+
   const markdownContent = `# chenmi
 
 Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.
 
 ## Navigation
 
-- [About](/about.md)
-- [Recent Posts](/posts.md)
+- [About](${getRelativeLocaleUrl(locale, "about")})
+- [Recent Posts](${getRelativeLocaleUrl(locale, "posts")})
 - [RSS Feed](/rss.xml)
 
 ## Links

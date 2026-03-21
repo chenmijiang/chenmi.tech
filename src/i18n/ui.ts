@@ -16,6 +16,20 @@ export const ui = {
     datetime: {
       published: "Published:",
       updated: "Updated:",
+      months: {
+        january: "January",
+        february: "February",
+        march: "March",
+        april: "April",
+        may: "May",
+        june: "June",
+        july: "July",
+        august: "August",
+        september: "September",
+        october: "October",
+        november: "November",
+        december: "December",
+      },
     },
     search: {
       placeholder: "Search posts...",
@@ -26,6 +40,15 @@ export const ui = {
     },
     card: {
       readingTime: "min read",
+    },
+    home: {
+      featured: "Featured",
+      allPosts: "All Posts",
+      rssFeed: "RSS Feed",
+      goHome: "Go back home",
+    },
+    posts: {
+      browseByDate: "Browse all blog posts by year and month",
     },
   },
   zh: {
@@ -45,6 +68,20 @@ export const ui = {
     datetime: {
       published: "发布于：",
       updated: "更新于：",
+      months: {
+        january: "一月",
+        february: "二月",
+        march: "三月",
+        april: "四月",
+        may: "五月",
+        june: "六月",
+        july: "七月",
+        august: "八月",
+        september: "九月",
+        october: "十月",
+        november: "十一月",
+        december: "十二月",
+      },
     },
     search: {
       placeholder: "搜索文章...",
@@ -55,6 +92,15 @@ export const ui = {
     },
     card: {
       readingTime: "分钟阅读",
+    },
+    home: {
+      featured: "精选",
+      allPosts: "所有文章",
+      rssFeed: "RSS 订阅",
+      goHome: "返回首页",
+    },
+    posts: {
+      browseByDate: "按年月浏览所有博客文章",
     },
   },
 } as const;

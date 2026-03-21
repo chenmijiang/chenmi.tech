@@ -4,24 +4,28 @@ import Card from "@/components/Card.astro";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import { SITE } from "@/consts";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
+
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
 const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  t(locale, "datetime.months.january"),
+  t(locale, "datetime.months.february"),
+  t(locale, "datetime.months.march"),
+  t(locale, "datetime.months.april"),
+  t(locale, "datetime.months.may"),
+  t(locale, "datetime.months.june"),
+  t(locale, "datetime.months.july"),
+  t(locale, "datetime.months.august"),
+  t(locale, "datetime.months.september"),
+  t(locale, "datetime.months.october"),
+  t(locale, "datetime.months.november"),
+  t(locale, "datetime.months.december"),
 ];
 ---
 
@@ -31,8 +35,8 @@ const months = [
     id="main-content"
     class="mx-auto w-full max-w-3xl px-4 pb-4"
   >
-    <h1 class="text-2xl font-semibold sm:text-3xl mt-8">All Posts</h1>
-    <p class="mt-2 mb-6 italic">Browse all blog posts by year and month</p>
+    <h1 class="text-2xl font-semibold sm:text-3xl mt-8">{t(locale, "home.allPosts")}</h1>
+    <p class="mt-2 mb-6 italic">{t(locale, "posts.browseByDate")}</p>
     {
       Object.entries(
         getPostsByGroupCondition(posts, (post) => {
