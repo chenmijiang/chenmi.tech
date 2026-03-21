@@ -50,7 +50,7 @@ const structuredData = {
 ---
 
 <!doctype html>
-<html lang=`${SITE.lang ?? "en"}` class={`${scrollSmooth && "scroll-smooth"}`}>
+<html lang={Astro.currentLocale || "en"} class={`${scrollSmooth && "scroll-smooth"}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -65,6 +65,20 @@ const structuredData = {
     <meta name="description" content={description} />
     <meta name="author" content={author} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {(() => {
+      const pathname = Astro.url.pathname;
+      const enPath = pathname.replace(/^\/zh\//, "/");
+      const zhPath = pathname.startsWith("/zh/") 
+        ? pathname 
+        : `/zh${pathname}`;
+      return (
+        <>
+          <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.url)} />
+          <link rel="alternate" hreflang="zh" href={new URL(zhPath, Astro.url)} />
+        </>
+      );
+    })()}
 
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content={title} />
