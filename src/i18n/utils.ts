@@ -14,5 +14,6 @@ export function t(locale: Locale, key: string): string {
 }
 
 export function getCurrentLocale(locale: string | undefined): Locale {
-  return locale && locale in { en: true, zh: true } ? (locale as Locale) : defaultLocale;
+  const supportedLocales = Object.keys(ui) as Locale[];
+  return locale && supportedLocales.includes(locale as Locale) ? (locale as Locale) : defaultLocale;
 }

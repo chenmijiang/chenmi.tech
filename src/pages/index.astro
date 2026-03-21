@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import IconRss from "@/assets/icons/IconRss.svg";
 import Card from "@/components/Card.astro";
@@ -10,11 +11,10 @@ import LinkButton from "@/components/LinkButton.astro";
 import Socials from "@/components/Socials.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import { SITE, SOCIALS } from "@/config";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { t } from "@/i18n/utils";
-import { defaultLocale, type Locale } from "@/i18n/ui";
 
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
 
@@ -49,15 +49,15 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
               target="_blank"
               href="/rss.xml"
               class="inline-block"
-              aria-label="rss feed"
-              title="RSS Feed"
+              aria-label={t(locale, "home.rssFeed")}
+              title={t(locale, "home.rssFeed")}
             >
               <IconRss
                 width={20}
                 height={20}
                 class="scale-125 stroke-accent stroke-3"
               />
-              <span class="sr-only">RSS Feed</span>
+              <span class="sr-only">{t(locale, "home.rssFeed")}</span>
             </a>
           </div>
           <p>
@@ -82,7 +82,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
       featuredPosts.length > 0 && (
         <>
           <section id="featured" class="pt-12 pb-6">
-            <h2 class="text-2xl font-semibold tracking-wide">{t(locale, "featured")}</h2>
+            <h2 class="text-2xl font-semibold tracking-wide">{t(locale, "home.featured")}</h2>
             <ul>
               {featuredPosts.map((data) => (
                 <Card variant="h3" {...data} showImage={false} />
@@ -109,7 +109,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
 
     <div class="my-8 text-center">
       <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
-        {t(locale, "allPosts")}
+        {t(locale, "home.allPosts")}
         <IconArrowRight class="inline-block" />
       </LinkButton>
     </div>

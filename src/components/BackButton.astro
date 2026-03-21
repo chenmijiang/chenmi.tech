@@ -1,7 +1,14 @@
 ---
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 import { SITE } from "@/config";
 import LinkButton from "./LinkButton.astro";
+
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const backHref = locale === defaultLocale ? "/" : getRelativeLocaleUrl(locale, "");
+const goBackText = t(locale, "nav.goBack");
 ---
 
 {
@@ -9,11 +16,11 @@ import LinkButton from "./LinkButton.astro";
     <div class="mx-auto flex w-full max-w-3xl items-center justify-start px-2">
       <LinkButton
         id="back-button"
-        href="/"
+        href={backHref}
         class="focus-outline mt-8 mb-2 flex hover:text-foreground/75"
       >
         <IconChevronLeft class="inline-block size-6" />
-        <span>Go back</span>
+        <span>{goBackText}</span>
       </LinkButton>
     </div>
   )

@@ -1,6 +1,9 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 import { getPath } from "@/utils/getPath";
 import { calculateReadingTime } from "@/utils/readingTime";
 import { slugifyStr } from "@/utils/slugify";
@@ -16,6 +19,14 @@ const { variant = "h2", data, id, filePath, body, showImage = true } = Astro.pro
 const { title, description, pubDatetime, modDatetime, timezone, heroImage } = data;
 const readingTime = calculateReadingTime(body ?? "");
 
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const readingTimeText = t(locale, "card.readingTime");
+
+const postPath = getPath(id, filePath);
+const localePostPath = locale === defaultLocale 
+  ? postPath 
+  : getRelativeLocaleUrl(locale, postPath.replace(/^\//, ""));
+
 const headerProps = {
   style: { viewTransitionName: slugifyStr(title) },
   class: "text-lg font-medium decoration-dashed hover:underline",
@@ -25,7 +36,7 @@ const headerProps = {
 <li class="my-8">
   <div>
     <a
-      href={getPath(id, filePath)}
+      href={localePostPath}
       class="inline-block text-lg font-medium text-accent decoration-dashed underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
     >
       {
@@ -38,12 +49,12 @@ const headerProps = {
     </a>
     <div class="flex items-center gap-3 mb-3">
       <Datetime {pubDatetime} {modDatetime} {timezone} />
-      <span class="text-sm italic opacity-80">• {readingTime}</span>
+      <span class="text-sm italic opacity-80">• {readingTime} {readingTimeText}</span>
     </div>
     <div class="flex gap-4 items-start">
       {showImage && heroImage && (
         <a 
-          href={getPath(id, filePath)}
+          href={localePostPath}
           class="flex-shrink-0 hidden sm:block group"
         >
           <Image

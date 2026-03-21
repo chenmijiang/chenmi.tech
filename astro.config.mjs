@@ -1,15 +1,14 @@
 // @ts-check
-
-import mdx from "@astrojs/mdx";
-import react from "@astrojs/react";
-import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
-import tailwindcss from "@tailwindcss/vite";
-import AstroPWA from "@vite-pwa/astro";
 import { defineConfig } from "astro/config";
-import remarkCollapse from "remark-collapse";
+import mdx from "@astrojs/mdx";
+import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
+import react from "@astrojs/react";
+import tailwindcss from "@tailwindcss/vite";
 import remarkToc from "remark-toc";
-import { SITE } from "./src/config";
+import remarkCollapse from "remark-collapse";
 import { remarkLazyLoadImages } from "./src/utils/remarkLazyLoadImages.mjs";
+import { SITE } from "./src/config";
+import AstroPWA from "@vite-pwa/astro";
 
 /**
  * @param {import("rollup").RollupLog} warning
@@ -21,10 +20,14 @@ function handleRollupWarning(warning, defaultHandler) {
     warning.exporter === "@astrojs/internal-helpers/remote" &&
     Array.isArray(warning.names) &&
     warning.names.every((name) =>
-      ["matchHostname", "matchPathname", "matchPort", "matchProtocol"].includes(name)
+      ["matchHostname", "matchPathname", "matchPort", "matchProtocol"].includes(
+        name,
+      ),
     ) &&
     Array.isArray(warning.ids) &&
-    warning.ids.every((id) => id.includes("node_modules/astro/dist/assets/"));
+    warning.ids.every((id) =>
+      id.includes("node_modules/astro/dist/assets/"),
+    );
 
   if (isAstroUnusedRemoteHelperWarning) {
     return;
@@ -38,16 +41,19 @@ export default defineConfig({
   site: SITE.website,
   trailingSlash: "never",
   i18n: {
-    defaultLocale: "en",
     locales: ["en", "zh"],
+    defaultLocale: "en",
     routing: {
       prefixDefaultLocale: false,
+    },
+    fallback: {
+      zh: "en",
     },
   },
   markdown: {
     remarkPlugins: [
       remarkToc,
-      // @ts-expect-error - TypeScript has issues with remark plugin tuple syntax
+      // @ts-ignore - TypeScript has issues with remark plugin tuple syntax
       [remarkCollapse, { test: "Table of contents" }],
       remarkLazyLoadImages,
     ],
@@ -89,7 +95,11 @@ export default defineConfig({
           item.lastmod = new Date().toISOString();
         }
         // Main section pages
-        else if (url.endsWith("/posts") || url.endsWith("/about") || url.endsWith("/search")) {
+        else if (
+          url.endsWith("/posts") ||
+          url.endsWith("/about") ||
+          url.endsWith("/search")
+        ) {
           item.priority = 0.9;
           item.changefreq = ChangeFreqEnum.WEEKLY;
         }
@@ -166,7 +176,9 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: "/404",
-        globPatterns: ["**/*.{css,js,html,svg,png,jpg,jpeg,gif,webp,woff,woff2,ttf,eot,ico}"],
+        globPatterns: [
+          "**/*.{css,js,html,svg,png,jpg,jpeg,gif,webp,woff,woff2,ttf,eot,ico}",
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

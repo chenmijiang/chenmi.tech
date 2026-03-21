@@ -4,6 +4,9 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import IconCalendar from "@/assets/icons/IconCalendar.svg";
 import { SITE } from "@/config";
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+import type { Locale } from "@/i18n/ui";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -24,6 +27,10 @@ const {
   timezone: postTimezone,
 } = Astro.props;
 
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const publishedLabel = t(locale, "datetime.published");
+const updatedLabel = t(locale, "datetime.updated");
+
 /* ========== Formatted Datetime ========== */
 const latestDatetime = modDatetime && modDatetime > pubDatetime ? modDatetime : pubDatetime;
 const datetime = dayjs(latestDatetime).tz(postTimezone || SITE.timezone);
@@ -41,10 +48,10 @@ const date = datetime.format("D MMM, YYYY"); // e.g., '22 Mar, 2025'
   {
     modDatetime && modDatetime > pubDatetime ? (
       <span class:list={["text-sm italic", { "sm:text-base": size === "lg" }]}>
-        Updated:
+        {updatedLabel}
       </span>
     ) : (
-      <span class="sr-only">Published:</span>
+      <span class="sr-only">{publishedLabel}</span>
     )
   }
   <span class:list={["text-sm italic", { "sm:text-base": size === "lg" }]}>
