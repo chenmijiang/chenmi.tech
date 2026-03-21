@@ -1,12 +1,12 @@
-# i18n Implementation Plan
+# i18n Implementation Plan (URL Prefix Approach)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add English/Chinese i18n support with browser auto-detection and manual toggle, without changing URL structure.
+**Goal:** Add English/Chinese i18n support using Astro's built-in i18n routing with URL prefixes (`/en/` for English, `/zh/` for Chinese).
 
-**Architecture:** Cookie-based language preference with middleware detection. All UI text stored in translation files, passed via Astro.locals.
+**Architecture:** Astro native i18n routing + translation files. Middleware handles root path browser language detection redirect. Static build generates HTML for all locale routes.
 
-**Tech Stack:** Astro middleware, Astro.locals, vanilla JS cookie handling, CSS-based button styling (ThemeToggle pattern).
+**Tech Stack:** Astro i18n routing, `Astro.currentLocale`, translation files, vanilla CSS/HTML.
 
 ---
 
@@ -17,10 +17,10 @@ src/
 ├── i18n/
 │   ├── ui.ts          # Translation strings (en, zh)
 │   └── utils.ts       # getLocale(), t() helpers
-├── middleware.js      # Language detection + cookie
-├── env.d.ts          # Astro.locals type declaration
+├── middleware.js      # Root path redirect + blog redirect
+├── env.d.ts          # Astro.locals type
 └── components/
-    └── LanguageSwitcher.astro  # Language toggle button
+    └── LanguageSwitcher.astro  # Language toggle link
 ```
 
 ---
@@ -136,42 +136,51 @@ git commit -m "feat(i18n): add translation strings and utilities"
 
 ---
 
-## Task 2: Update Middleware and Types
+## Task 2: Update Astro Config and Middleware
 
 **Files:**
+- Modify: `astro.config.mjs`
 - Modify: `src/middleware.js`
 - Modify: `src/env.d.ts`
 
-- [ ] **Step 1: Update `src/env.d.ts` to add Astro.locals type**
+- [ ] **Step 1: Update `astro.config.mjs`**
+
+Add i18n configuration inside `defineConfig`:
+
+```javascript
+i18n: {
+  locales: ["en", "zh"],
+  defaultLocale: "en",
+  routing: {
+    prefixDefaultLocale: false,
+  },
+  fallback: {
+    zh: "en",
+  },
+},
+```
+
+- [ ] **Step 2: Update `src/env.d.ts`**
 
 ```typescript
 /// <reference types="astro/client" />
-
-declare namespace App {
-  interface Locals {
-    lang: "en" | "zh";
-  }
-}
 ```
 
-- [ ] **Step 2: Update `src/middleware.js`**
+(No changes needed - Astro.locals is already typed through Astro's types)
+
+- [ ] **Step 3: Update `src/middleware.js`**
 
 ```javascript
-import { ui, defaultLocale } from "./i18n/ui";
-
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
-
-function parseAcceptLanguage(header) {
-  if (!header) return defaultLocale;
-  const langs = header.split(",").map((l) => l.split(";")[0].trim().toLowerCase());
-  for (const lang of langs) {
-    if (lang.startsWith("zh")) return "zh";
-  }
-  return defaultLocale;
-}
-
 export const onRequest = async (context, next) => {
   const url = new URL(context.request.url);
+
+  // Redirect root to appropriate locale based on Accept-Language
+  if (url.pathname === "/" || url.pathname === "") {
+    const acceptLanguage = context.request.headers.get("accept-language") || "";
+    const locale = acceptLanguage.toLowerCase().startsWith("zh") ? "zh" : "en";
+    const targetPath = locale === "en" ? "/en/" : "/zh/";
+    return context.redirect(targetPath, 302);
+  }
 
   // Existing redirects
   if (url.pathname.startsWith("/blog/")) {
@@ -181,39 +190,15 @@ export const onRequest = async (context, next) => {
     return context.redirect("/posts", 301);
   }
 
-  // i18n: Determine language
-  let lang = defaultLocale;
-  const cookies = context.cookies;
-  const storedLang = cookies.get("lang")?.value;
-
-  if (storedLang && storedLang in ui) {
-    lang = storedLang;
-  } else {
-    const acceptLanguage = context.request.headers.get("accept-language");
-    lang = parseAcceptLanguage(acceptLanguage);
-  }
-
-  // Set cookie if not already set
-  if (!storedLang) {
-    cookies.set("lang", lang, {
-      path: "/",
-      maxAge: COOKIE_MAX_AGE,
-      sameSite: "lax",
-    });
-  }
-
-  // Pass lang to Astro.locals
-  context.locals.lang = lang;
-
   return next();
 };
 ```
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add src/env.d.ts src/middleware.js
-git commit -m "feat(i18n): add language detection middleware"
+git add astro.config.mjs src/middleware.js
+git commit -m "feat(i18n): configure Astro i18n routing and middleware"
 ```
 
 ---
@@ -221,8 +206,8 @@ git commit -m "feat(i18n): add language detection middleware"
 ## Task 3: Create LanguageSwitcher Component
 
 **Files:**
-- Create: `src/components/LanguageSwitcher.astro`
 - Create: `src/assets/icons/IconGlobe.svg`
+- Create: `src/components/LanguageSwitcher.astro`
 
 - [ ] **Step 1: Create `src/assets/icons/IconGlobe.svg`**
 
@@ -239,36 +224,27 @@ git commit -m "feat(i18n): add language detection middleware"
 ```astro
 ---
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
-import { ui, defaultLocale } from "@/i18n/ui";
+import { defaultLocale } from "@/i18n/ui";
 
-const { lang } = Astro.locals;
-const currentLang = lang || defaultLocale;
+const currentLocale = Astro.currentLocale || defaultLocale;
+const alternateLocale = currentLocale === "en" ? "zh" : "en";
+const currentPath = Astro.url.pathname;
+
+// Replace locale prefix in path
+const alternatePath = currentPath.replace(/^\/(en|zh)\//, `/${alternateLocale}/`);
+const alternateLabel = alternateLocale === "en" ? "English" : "中文";
+const currentLabel = currentLocale === "en" ? "English" : "中文";
 ---
 
-<button
-  id="lang-toggle"
-  type="button"
+<a
+  href={alternatePath}
   class="rounded-md p-2 text-gray-600 dark:text-gray-300 transition-colors hover:bg-secondary hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none"
-  aria-label="Toggle language"
-  title={currentLang === "en" ? "Switch to Chinese" : "切换到英文"}
+  aria-label={`Switch to ${alternateLabel}`}
+  title={`Switch to ${alternateLabel}`}
 >
   <IconGlobe class="h-5 w-5" />
-  <span class="sr-only">{currentLang === "en" ? "中文" : "English"}</span>
-</button>
-
-<script>
-  function toggleLang() {
-    const currentLang = document.documentElement.lang || "en";
-    const newLang = currentLang === "en" ? "zh" : "en";
-    
-    document.cookie = `lang=${newLang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-    
-    window.location.reload();
-  }
-
-  const button = document.getElementById("lang-toggle");
-  button?.addEventListener("click", toggleLang);
-</script>
+  <span class="sr-only">{alternateLabel}</span>
+</a>
 ```
 
 - [ ] **Step 3: Commit**
@@ -285,35 +261,18 @@ git commit -m "feat(i18n): add LanguageSwitcher component"
 **Files:**
 - Modify: `src/components/Header.astro`
 
-- [ ] **Step 1: Add LanguageSwitcher next to ThemeToggle in Header**
+- [ ] **Step 1: Add LanguageSwitcher after ThemeToggle**
 
-Find the ThemeToggle `<li>` element and add LanguageSwitcher after it:
-
+Add import at top:
 ```astro
-{
-  SITE.lightAndDarkMode && (
-    <li class="col-span-1 flex items-center justify-center">
-      <button
-        id="theme-btn"
-        class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-        title="Toggles light & dark"
-        aria-label="auto"
-        aria-live="polite"
-      >
-        <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-        <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-      </button>
-    </li>
-  )
-}
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+```
+
+Add LanguageSwitcher after the ThemeToggle `</li>`:
+```astro
 <li class="col-span-1 flex items-center justify-center">
   <LanguageSwitcher />
 </li>
-```
-
-Add import:
-```astro
-import LanguageSwitcher from "./LanguageSwitcher.astro";
 ```
 
 - [ ] **Step 2: Commit**
@@ -325,151 +284,187 @@ git commit -m "feat(i18n): integrate LanguageSwitcher in Header"
 
 ---
 
-## Task 5: Update Layout to Set lang Attribute
+## Task 5: Update Components to Use Translations
+
+**Files:**
+- Modify: `src/components/Datetime.astro`
+- Modify: `src/components/Pagination.astro`
+- Modify: `src/components/Footer.astro`
+- Modify: `src/components/Header.astro`
+- Modify: `src/pages/404.astro`
+
+- [ ] **Step 1: Update `src/components/Datetime.astro`**
+
+Add imports:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+```
+
+Get current locale:
+```astro
+const locale = Astro.currentLocale || defaultLocale;
+const publishedLabel = t(locale, "datetime.published");
+const updatedLabel = t(locale, "datetime.updated");
+```
+
+Replace hardcoded "Published:" and "Updated:" with `{publishedLabel}` and `{updatedLabel}`.
+
+- [ ] **Step 2: Update `src/components/Pagination.astro`**
+
+Add imports:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+```
+
+Get locale and translate:
+```astro
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Replace "Prev" → `{t(locale, "pagination.prev")}` and "Next" → `{t(locale, "pagination.next")}`.
+
+- [ ] **Step 3: Update `src/components/Footer.astro`**
+
+Add imports:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+```
+
+Get locale and translate:
+```astro
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Replace "View source on GitHub" → `{t(lang, "footer.viewSource")}`.
+
+- [ ] **Step 4: Update `src/components/Header.astro`**
+
+Add imports and translate nav items:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Replace:
+- "Posts" → `{t(locale, "nav.blog")}`
+- "About" → `{t(locale, "nav.about")}`
+- "Skip to content" → `{t(locale, "nav.skipToContent")}`
+- Search sr-only text → `{t(locale, "nav.search")}`
+
+- [ ] **Step 5: Update `src/pages/404.astro`**
+
+Add imports:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+```
+
+Get locale and translate:
+```astro
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Replace title and description with `{t(locale, "notFound.title")}` and `{t(locale, "notFound.description")}`.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/components/Datetime.astro src/components/Pagination.astro src/components/Footer.astro src/components/Header.astro src/pages/404.astro
+git commit -m "feat(i18n): update components to use translations"
+```
+
+---
+
+## Task 6: Update Pages with Translations
+
+**Files:**
+- Modify: `src/pages/index.astro`
+- Modify: `src/pages/posts/index.astro`
+- Modify: `src/pages/search.astro`
+- Modify: `src/pages/about.md.ts`
+
+- [ ] **Step 1: Update `src/pages/index.astro`**
+
+Add imports and get locale:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Find and replace hardcoded English text:
+- "All Posts" / "Featured" / Hero section text → use `t(locale, "...")`
+- Month names like "March" in date formatting should be handled by `Datetime` component (already translated)
+
+- [ ] **Step 2: Update `src/pages/posts/index.astro`**
+
+Add imports and get locale:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Translate page title and description.
+
+- [ ] **Step 3: Update `src/pages/search.astro`**
+
+Add imports and get locale:
+```astro
+import { t } from "@/i18n/utils";
+import { defaultLocale } from "@/i18n/ui";
+
+const locale = Astro.currentLocale || defaultLocale;
+```
+
+Replace placeholder text with `{t(locale, "search.placeholder")}`.
+
+Note: Pagefind UI itself cannot be translated easily - it's loaded from CDN. The placeholder text we control will be translated.
+
+- [ ] **Step 4: Update `src/pages/about.md.ts`**
+
+This page uses a markdown layout. Add frontmatter translation if needed.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/pages/index.astro src/pages/posts/index.astro src/pages/search.astro src/pages/about.md.ts
+git commit -m "feat(i18n): update pages with translations"
+```
+
+---
+
+## Task 7: Update Layout for SEO hreflang
 
 **Files:**
 - Modify: `src/layouts/Layout.astro`
 
-- [ ] **Step 1: Update html lang attribute**
+- [ ] **Step 1: Add hreflang tags**
 
-In Layout.astro, change:
+After the `<head>` opening, add hreflang alternates:
+
 ```astro
-<html lang={`${SITE.lang ?? "en"}`} class={`${scrollSmooth && "scroll-smooth"}`}>
+<link rel="alternate" hreflang="en" href={new URL(Astro.url.pathname.replace(/^\/zh\//, "/en/"), Astro.url)} />
+<link rel="alternate" hreflang="zh" href={new URL(Astro.url.pathname.replace(/^\/en\//, "/zh/"), Astro.url)} />
 ```
 
-To:
+Update html lang attribute:
 ```astro
-const { lang = "en" } = Astro.locals;
----
-<html lang={lang} class={`${scrollSmooth && "scroll-smooth"}`}>
+<html lang={Astro.currentLocale || "en"}>
 ```
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add src/layouts/Layout.astro
-git commit -m "feat(i18n): set html lang from Astro.locals"
-```
-
----
-
-## Task 6: Update Components to Use Translations
-
-**Files:**
-- Modify: `src/components/Datetime.astro`
-- Modify: `src/components/Pagination.astro`
-- Modify: `src/components/Footer.astro`
-- Modify: `src/pages/404.astro`
-- Modify: `src/components/Header.astro` (Skip to content text)
-
-- [ ] **Step 1: Update `src/components/Datetime.astro`**
-
-Add import:
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-```
-
-Replace "Updated:" and "Published:" text:
-```astro
-const lang = Astro.locals.lang || defaultLocale;
-const publishedLabel = t(lang, "datetime.published");
-const updatedLabel = t(lang, "datetime.updated");
-```
-
-Replace in template:
-```astro
-<span class="sr-only">{publishedLabel}</span>
-```
-```astro
-<span class="text-sm italic">
-  {updatedLabel}
-</span>
-```
-
-- [ ] **Step 2: Update `src/components/Pagination.astro`**
-
-Add import and use t():
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const lang = Astro.locals.lang || defaultLocale;
-```
-
-Replace "Prev" and "Next" with `{t(lang, "pagination.prev")}` and `{t(lang, "pagination.next")}`.
-
-- [ ] **Step 3: Update `src/components/Footer.astro`**
-
-Add import and use t():
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const lang = Astro.locals.lang || defaultLocale;
-```
-
-Replace "View source on GitHub" with `{t(lang, "footer.viewSource")}`.
-
-- [ ] **Step 4: Update `src/pages/404.astro`**
-
-Add import and use t():
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const lang = Astro.locals.lang || defaultLocale;
-```
-
-Replace title and description with translated versions.
-
-- [ ] **Step 5: Update `src/components/Header.astro`**
-
-Add import and use t():
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const lang = Astro.locals.lang || defaultLocale;
-```
-
-Replace navigation text:
-- "Posts" → `{t(lang, "nav.blog")}`
-- "About" → `{t(lang, "nav.about")}`
-- "Skip to content" → `{t(lang, "nav.skipToContent")}`
-- Search `<span class="sr-only">Search</span>` → `<span class="sr-only">{t(lang, "nav.search")}</span>`
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add src/components/Datetime.astro src/components/Pagination.astro src/components/Footer.astro src/pages/404.astro src/components/Header.astro
-git commit -m "feat(i18n): update components to use translations"
-```
-
----
-
-## Task 7: Update Search Page
-
-**Files:**
-- Modify: `src/pages/search.astro`
-
-- [ ] **Step 1: Update search page text**
-
-Add import and use t():
-```astro
-import { t } from "@/i18n/utils";
-import { defaultLocale } from "@/i18n/ui";
-
-const lang = Astro.locals.lang || defaultLocale;
-```
-
-Replace hardcoded search placeholder with `{t(lang, "search.placeholder")}`.
-
-- [ ] **Step 2: Commit**
-
-```bash
-git add src/pages/search.astro
-git commit -m "feat(i18n): update search page text"
+git commit -m "feat(i18n): add hreflang tags for SEO"
 ```
 
 ---
@@ -499,10 +494,10 @@ Expected: No lint errors.
 | Task | Files | Description |
 |------|-------|-------------|
 | 1 | ui.ts, utils.ts | Translation strings and helpers |
-| 2 | middleware.js, env.d.ts | Language detection and cookie |
+| 2 | astro.config.mjs, middleware.js | Astro i18n routing config |
 | 3 | LanguageSwitcher.astro, IconGlobe.svg | Toggle button |
 | 4 | Header.astro | Integrate toggle in nav |
-| 5 | Layout.astro | Set html lang attribute |
-| 6 | Datetime, Pagination, Footer, 404, Header | Use t() for UI text |
-| 7 | search.astro | Update search placeholder |
+| 5 | Datetime, Pagination, Footer, Header, 404 | Use t() for UI text |
+| 6 | index, posts, search, about pages | Page text translations |
+| 7 | Layout.astro | hreflang SEO tags |
 | 8 | - | Verify build |
