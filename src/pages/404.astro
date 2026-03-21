@@ -4,9 +4,14 @@ import Header from "@/components/Header.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { t } from "@/i18n/utils";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
 ---
 
-<Layout title={`404 Not Found | ${SITE.title}`} description={`Page not found on ${SITE.title}.`}>
+<Layout title={`404 ${t(locale, "notFound.title")} | ${SITE.title}`} description={t(locale, "notFound.description")}>
   <Header />
 
   <main
@@ -16,12 +21,12 @@ import Layout from "@/layouts/Layout.astro";
     <div class="mb-14 flex flex-col items-center justify-center">
       <h1 class="text-9xl font-bold text-accent">404</h1>
       <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-2xl sm:text-3xl">Page Not Found</p>
+      <p class="mt-4 text-2xl sm:text-3xl">{t(locale, "notFound.title")}</p>
       <LinkButton
-        href="/"
+        href={getRelativeLocaleUrl(locale, "")}
         class="my-6 text-lg underline decoration-dashed underline-offset-8"
       >
-        Go back home
+        {t(locale, "goHome")}
       </LinkButton>
     </div>
   </main>

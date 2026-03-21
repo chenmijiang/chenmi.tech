@@ -27,6 +27,10 @@ export const ui = {
     card: {
       readingTime: "min read",
     },
+    featured: "Featured",
+    allPosts: "All Posts",
+    rssFeed: "RSS Feed",
+    goHome: "Go back home",
   },
   zh: {
     nav: {
@@ -56,6 +60,10 @@ export const ui = {
     card: {
       readingTime: "分钟阅读",
     },
+    featured: "精选",
+    allPosts: "所有文章",
+    rssFeed: "RSS 订阅",
+    goHome: "返回首页",
   },
 } as const;
 

@@ -5,8 +5,12 @@ import Header from "@/components/Header.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import Main from "@/layouts/Main.astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { t } from "@/i18n/utils";
+import { defaultLocale, type Locale } from "@/i18n/ui";
 
-const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : getRelativeLocaleUrl(locale, "");
 ---
 
 <Layout title={`Search | ${SITE.title}`} description={`Search posts and notes published on ${SITE.title}.`}>

@@ -12,6 +12,11 @@ import StructuredData from "@/components/StructuredData.astro";
 import { SITE, SOCIALS } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { t } from "@/i18n/utils";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
 
 const posts = await getCollection("blog");
 
@@ -28,7 +33,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-6 pb-4">
       <div class="flex flex-col sm:flex-row items-start gap-4">
-        <a href="/about" class="block mx-auto sm:mx-0 group">
+        <a href={getRelativeLocaleUrl(locale, "about")} class="block mx-auto sm:mx-0 group">
           <img
             src="/chen-mi-avatar.jpg"
             alt="chenmi"
@@ -77,7 +82,7 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
       featuredPosts.length > 0 && (
         <>
           <section id="featured" class="pt-12 pb-6">
-            <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
+            <h2 class="text-2xl font-semibold tracking-wide">{t(locale, "featured")}</h2>
             <ul>
               {featuredPosts.map((data) => (
                 <Card variant="h3" {...data} showImage={false} />
@@ -103,8 +108,8 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     }
 
     <div class="my-8 text-center">
-      <LinkButton href="/posts">
-        All Posts
+      <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
+        {t(locale, "allPosts")}
         <IconArrowRight class="inline-block" />
       </LinkButton>
     </div>
