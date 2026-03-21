@@ -1,15 +1,25 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { Page } from "astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import LinkButton from "./LinkButton.astro";
+import { t } from "@/i18n/utils";
+import { defaultLocale, type Locale } from "@/i18n/ui";
 
 export interface Props {
   page: Page<CollectionEntry<"blog">>;
 }
 
 const { page } = Astro.props;
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+
+function getLocalizedUrl(url: string | undefined): string {
+  if (!url) return "/";
+  const path = url.toString().replace(/^\/(en|zh)\//, "/");
+  return getRelativeLocaleUrl(locale, path);
+}
 ---
 
 {
@@ -17,21 +27,21 @@ const { page } = Astro.props;
     <nav class="mt-auto mb-8 flex justify-center" aria-label="Pagination">
       <LinkButton
         disabled={!page.url.prev}
-        href={page.url.prev as string}
+        href={getLocalizedUrl(page.url.prev)}
         class:list={["mr-4 select-none", { "opacity-50": !page.url.prev }]}
         ariaLabel="Previous"
       >
         <IconArrowLeft class="inline-block" />
-        Prev
+        {t(locale, "pagination.prev")}
       </LinkButton>
       {page.currentPage} / {page.lastPage}
       <LinkButton
         disabled={!page.url.next}
-        href={page.url.next as string}
+        href={getLocalizedUrl(page.url.next)}
         class:list={["ml-4 select-none", { "opacity-50": !page.url.next }]}
         ariaLabel="Next"
       >
-        Next
+        {t(locale, "pagination.next")}
         <IconArrowRight class="inline-block" />
       </LinkButton>
     </nav>
