@@ -104,19 +104,24 @@ export const defaultLocale: Locale = "en";
 - [ ] **Step 2: Create `src/i18n/utils.ts`**
 
 ```typescript
-import { getRelativeLocaleUrl, type Locale } from "astro:i18n";
-import { defaultLocale } from "./ui";
+import { ui, defaultLocale, type Locale } from "./ui";
 
-export function getLocalePath(locale: Locale, path: string): string {
-  if (locale === defaultLocale) {
-    return path.startsWith("/") ? path : `/${path}`;
+export function t(locale: Locale, key: string): string {
+  const keys = key.split(".");
+  let value: unknown = ui[locale];
+  for (const k of keys) {
+    if (value && typeof value === "object" && k in value) {
+      value = (value as Record<string, unknown>)[k];
+    } else {
+      return key;
+    }
   }
-  return getRelativeLocaleUrl(locale, path);
+  return typeof value === "string" ? value : key;
 }
 
 export function getCurrentLocale(locale: string | undefined): Locale {
-  return (locale && locale in { en: true, zh: true }) 
-    ? locale as Locale 
+  return (locale && locale in { en: true, zh: true })
+    ? (locale as Locale)
     : defaultLocale;
 }
 ```
@@ -125,7 +130,27 @@ export function getCurrentLocale(locale: string | undefined): Locale {
 
 ```bash
 git add src/i18n/ui.ts src/i18n/utils.ts
-git commit -m "feat(i18n): add translation strings and locale path utilities"
+git commit -m "feat(i18n): add translation strings and t() utility"
+```
+
+---
+
+## Task 2.5: Update getPath Utility (if needed)
+
+**Files:**
+- Modify: `src/utils/getPath.ts`
+
+- [ ] **Step 1: Review getPath usage**
+
+Check if `getPath()` is used directly in components that need locale-aware URLs. If so, those usages should be updated to prepend locale prefix manually using `getRelativeLocaleUrl()`.
+
+Note: The plan tasks handle updating individual component usages of `getPath()` by wrapping results with locale prefix.
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add src/utils/getPath.ts
+git commit -m "refactor(i18n): ensure getPath returns consistent paths"
 ```
 
 ---
@@ -607,8 +632,9 @@ Expected: No lint errors.
 
 | Task | Files | Description |
 |------|-------|-------------|
-| 1 | ui.ts, utils.ts | Translation strings and locale path helpers |
+| 1 | ui.ts, utils.ts | Translation strings and t() utility |
 | 2 | astro.config.mjs, middleware.js | Astro i18n config and middleware |
+| 2.5 | getPath.ts | Review and ensure consistent path format |
 | 3 | LanguageSwitcher.astro, IconGlobe.svg | Language toggle |
 | 4 | Header.astro | Locale-aware nav links |
 | 5 | Footer.astro, Datetime.astro | Translation text |
