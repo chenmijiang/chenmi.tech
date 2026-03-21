@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add English/Chinese i18n support using Astro's built-in i18n routing with URL prefixes (`/en/` for English default, `/zh/` for Chinese).
+**Goal:** Add English/Chinese i18n support using Astro's built-in i18n routing with URL prefixes (English has no prefix, Chinese uses `/zh/`).
 
 **Architecture:** 
 - `prefixDefaultLocale: false` - English has no prefix, Chinese uses `/zh/`
@@ -561,7 +561,7 @@ For each `.md.ts` route:
 - [ ] **Step 7: Commit**
 
 ```bash
-git add src/pages/index.astro src/pages/posts/index.astro src/pages/search.astro src/pages/404.astro src/pages/about.md.ts
+git add src/pages/index.astro src/pages/posts/index.astro src/pages/search.astro src/pages/404.astro src/pages/about.md.ts src/pages/index.md.ts src/pages/posts.md.ts src/pages/posts/\[...slug\].md.ts
 git commit -m "feat(i18n): update pages with locale-aware links"
 ```
 
@@ -610,30 +610,43 @@ git commit -m "feat(i18n): add hreflang tags and html lang to Layout"
 **Files:**
 - Modify: `src/pages/rss.xml.ts`
 
-- [ ] **Step 1: Update RSS with locale-aware paths**
+- [ ] **Step 1: Update RSS feed**
 
-The RSS feed should generate post links with proper locale paths. Update the `getPath` calls to include locale prefix when needed.
+The RSS feed stays as single English feed at `/rss.xml`. Post links use default locale paths (no prefix).
+
+To add hreflang alternate link, use `customData` parameter:
 
 ```typescript
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { defaultLocale } from "@/i18n/ui";
 
-// In the items mapping:
-items: sortedPosts.map(({ data, id, filePath }) => {
-  const postPath = getPath(id, filePath);
-  const localePath = getRelativeLocaleUrl(defaultLocale, postPath.replace(/^\//, ""));
-  return {
-    link: new URL(localePath, siteURL).toString(),
-    // ...
-  };
-}),
+// In rss() call:
+return rss({
+  title: SITE.title,
+  description: SITE.desc,
+  site: SITE.website,
+  trailingSlash: false,
+  customData: `<atom:link href="${SITE.website}zh/rss.xml" rel="alternate" type="application/rss+xml" hreflang="zh" />`,
+  items: sortedPosts.map(({ data, id, filePath }) => {
+    const postPath = getPath(id, filePath);
+    const localePath = getRelativeLocaleUrl(defaultLocale, postPath.replace(/^\//, ""));
+    return {
+      link: new URL(localePath, siteURL).toString(),
+      title: data.title,
+      description: data.description,
+      pubDate: new Date(data.modDatetime ?? data.pubDatetime),
+    };
+  }),
+});
 ```
+
+Note: If Chinese RSS feed is needed later, create `src/pages/zh/rss.xml.ts` with Chinese title/description and zh-prefixed links.
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add src/pages/rss.xml.ts
-git commit -m "feat(i18n): update RSS feed with locale-aware paths"
+git commit -m "feat(i18n): update RSS feed with hreflang alternate link"
 ```
 
 ---
