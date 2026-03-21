@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, render } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import BackButton from "@/components/BackButton.astro";
@@ -13,6 +14,7 @@ import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
+import { defaultLocale, type Locale } from "@/i18n/ui";
 import { getPath } from "@/utils/getPath";
 import { calculateReadingTime } from "@/utils/readingTime";
 import { slugifyStr } from "@/utils/slugify";
@@ -23,6 +25,15 @@ export interface Props {
 }
 
 const { post, posts } = Astro.props;
+
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
+
+const getLocalePostUrl = (slug: string) => {
+  const postPath = `/posts/${slug}`;
+  return locale === defaultLocale 
+    ? postPath 
+    : getRelativeLocaleUrl(locale, postPath.replace(/^\//, ""));
+};
 
 const {
   title,
@@ -180,13 +191,13 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
     <div 
       data-pagefind-ignore 
       class="flex flex-col sm:flex-row justify-between gap-6"
-      data-prev-url={prevPost ? `/posts/${prevPost.slug}` : ''}
-      data-next-url={nextPost ? `/posts/${nextPost.slug}` : ''}
+      data-prev-url={prevPost ? getLocalePostUrl(prevPost.slug) : ''}
+      data-next-url={nextPost ? getLocalePostUrl(nextPost.slug) : ''}
     >
       {
         prevPost && (
           <a
-            href={`/posts/${prevPost.slug}`}
+            href={prevPost ? getLocalePostUrl(prevPost.slug) : ''}
             class="flex gap-2 hover:opacity-75 items-start"
             id="prev-post-link"
           >
@@ -201,7 +212,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
       {
         nextPost && (
           <a
-            href={`/posts/${nextPost.slug}`}
+            href={nextPost ? getLocalePostUrl(nextPost.slug) : ''}
             class="flex gap-2 hover:opacity-75 items-start justify-end text-right ml-auto"
             id="next-post-link"
           >
