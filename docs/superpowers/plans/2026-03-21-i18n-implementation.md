@@ -194,12 +194,15 @@ export const onRequest = async (context, next) => {
     return next();
   }
 
-  // Existing redirects
-  if (url.pathname.startsWith("/blog/")) {
-    return context.redirect("/posts/" + url.pathname.slice(6), 301);
-  }
-  if (url.pathname === "/blog" || url.pathname === "/blog/") {
-    return context.redirect("/posts", 301);
+  // Legacy /blog redirects - preserve locale
+  const blogMatch = url.pathname.match(/^\/(en|zh)?\/blog(\/.*)?$/);
+  if (blogMatch) {
+    const localePrefix = blogMatch[1] ? `/${blogMatch[1]}` : "";
+    const pathSuffix = blogMatch[2] || "";
+    const targetPath = pathSuffix 
+      ? `${localePrefix}/posts${pathSuffix}`
+      : `${localePrefix}/posts`;
+    return context.redirect(targetPath, 301);
   }
 
   return next();
@@ -468,10 +471,23 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 ```
 
 Update prev/next post links:
-- Current: `href={prevPost ? `/posts/${prevPost.slug}` : ''}`
-- New: Use `getRelativeLocaleUrl(locale, `posts/${prevPost.slug.replace(/.*\//, "")}`)}`
 
-Update back-to-top href if needed.
+The PostDetails already computes full paths using `getPath()`. We need to prepend locale prefix:
+
+```astro
+// Get locale-aware post path
+const getLocalePostUrl = (slug: string) => {
+  // Reconstruct the path using the same logic as getPath
+  // slug format is "2025/foo" or "foo"
+  const postPath = `/posts/${slug}`;
+  return locale === defaultLocale 
+    ? postPath 
+    : getRelativeLocaleUrl(locale, postPath.replace(/^\//, ""));
+};
+```
+
+Then update the prev/next hrefs:
+- `href={prevPost ? getLocalePostUrl(prevPost.slug) : ''}`
 
 - [ ] **Step 2: Commit**
 
@@ -528,7 +544,21 @@ Add imports and locale, update title/description.
 
 Check if about page has any hardcoded links or text.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Add tasks for .md friendly entry routes**
+
+These routes provide markdown-friendly URLs. Need to update them to use locale-aware links:
+
+- `src/pages/index.md.ts` - Redirects to appropriate locale
+- `src/pages/posts.md.ts` - List page with locale links  
+- `src/pages/posts/[...slug].md.ts` - Individual post pages
+
+For each `.md.ts` route:
+1. Add imports for `getRelativeLocaleUrl` and `Locale` type
+2. Get current locale: `const locale = (Astro.currentLocale || defaultLocale) as Locale;`
+3. Update any hardcoded `/posts`, `/about`, etc. links to use `getRelativeLocaleUrl(locale, "posts")`
+4. Update redirect targets to preserve locale (e.g., redirect from `/index.md` to locale-prefixed path)
+
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/pages/index.astro src/pages/posts/index.astro src/pages/search.astro src/pages/404.astro src/pages/about.md.ts
