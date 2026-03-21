@@ -64,6 +64,54 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
         search.triggerSearch(query);
       }
 
+      const normalizeInternalUrl = (value?: string) => {
+        if (!value) return value;
+
+        const trimTrailingSlash = (pathname: string) =>
+          pathname !== "/" && pathname.endsWith("/")
+            ? pathname.slice(0, -1)
+            : pathname;
+
+        try {
+          const parsed = new URL(value, window.location.origin);
+
+          if (parsed.origin !== window.location.origin) {
+            return value;
+          }
+
+          parsed.pathname = trimTrailingSlash(parsed.pathname);
+          return parsed.pathname + parsed.search + parsed.hash;
+        } catch {
+          return trimTrailingSlash(value);
+        }
+      };
+
+      const normalizeResultLinks = () => {
+        const links = pageFindSearch.querySelectorAll<HTMLAnchorElement>(
+          ".pagefind-ui__result-link[href]",
+        );
+
+        links.forEach((link) => {
+          const currentHref = link.getAttribute("href") ?? undefined;
+          const normalizedHref = normalizeInternalUrl(currentHref);
+
+          if (normalizedHref && currentHref !== normalizedHref) {
+            link.setAttribute("href", normalizedHref);
+          }
+        });
+      };
+
+      const resultObserver = new MutationObserver(() => {
+        normalizeResultLinks();
+      });
+
+      resultObserver.observe(pageFindSearch, {
+        childList: true,
+        subtree: true,
+      });
+
+      normalizeResultLinks();
+
       // Reset search param if search input is cleared and auto-focus
       const searchInput = document.querySelector(".pagefind-ui__search-input") as HTMLInputElement;
       const clearButton = document.querySelector(".pagefind-ui__search-clear");
