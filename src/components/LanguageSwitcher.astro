@@ -16,6 +16,7 @@ const alternateLabel = alternateLocale === "en" ? "English" : "中文";
   class="rounded-md p-2 text-gray-600 dark:text-gray-300 transition-colors hover:bg-secondary hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none"
   aria-label={`Switch to ${alternateLabel}`}
   title={`Switch to ${alternateLabel}`}
+  onclick="sessionStorage.setItem('locale-override','1')"
 >
   <IconGlobe class="h-5 w-5" />
   <span class="sr-only">{alternateLabel}</span>

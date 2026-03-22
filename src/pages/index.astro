@@ -122,7 +122,9 @@ const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
     const indexLayout = (document.querySelector("#main-content") as HTMLElement)
       ?.dataset?.layout;
     if (indexLayout) {
-      sessionStorage.setItem("backUrl", "/");
+      const locale = document.documentElement.lang;
+      const backUrl = locale === "zh" ? "/zh/" : "/";
+      sessionStorage.setItem("backUrl", backUrl);
     }
   });
 </script>

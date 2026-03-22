@@ -1,5 +1,7 @@
 ---
 import IconHash from "@/assets/icons/IconHash.svg";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLocale, type Locale } from "@/i18n/ui";
 
 export interface Props {
   tag: string;
@@ -8,6 +10,7 @@ export interface Props {
 }
 
 const { tag, tagName, size = "sm" } = Astro.props;
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
 ---
 
 <li
@@ -17,7 +20,7 @@ const { tag, tagName, size = "sm" } = Astro.props;
   ]}
 >
   <a
-    href={`/tags/${tag}`}
+    href={getRelativeLocaleUrl(locale, `tags/${tag}`)}
     transition:name={tag}
     class:list={[
       "relative pr-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1",

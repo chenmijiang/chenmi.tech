@@ -45,6 +45,7 @@ export default defineConfig({
     defaultLocale: "en",
     routing: {
       prefixDefaultLocale: false,
+      fallbackType: "rewrite",
     },
     fallback: {
       zh: "en",

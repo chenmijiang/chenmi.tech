@@ -52,6 +52,12 @@ export const ui = {
     posts: {
       browseByDate: "Browse all blog posts by year and month",
     },
+    tags: {
+      title: "Tags",
+      description: "All the tags used in posts.",
+      tagPrefix: "Tag:",
+      tagDesc: "All the articles with the tag",
+    },
   },
   zh: {
     nav: {
@@ -105,6 +111,12 @@ export const ui = {
     },
     posts: {
       browseByDate: "按年月浏览所有博客文章",
+    },
+    tags: {
+      title: "标签",
+      description: "文章中使用的所有标签。",
+      tagPrefix: "标签：",
+      tagDesc: "所有包含该标签的文章",
     },
   },
 } as const;
