@@ -1,6 +1,6 @@
 # chenmi's Personal Website
 
-This is the source code for chenmi's personal website, built with [Astro](https://astro.build) and deployed on [Vercel](https://vercel.com).
+This is the source code for chenmi's personal website, built with [Astro](https://astro.build).
 
 ## About
 
@@ -23,7 +23,6 @@ I'm chenmi, a full-stack developer focused on scalable web applications, practic
 │   ├── styles/          # Global styles and CSS
 │   └── utils/           # Utility functions
 ├── astro.config.mjs     # Astro configuration
-├── vercel.json          # Vercel deployment and CSP configuration
 ├── package.json         # Project dependencies and scripts
 ├── tailwind.config.mjs  # Tailwind CSS configuration
 └── LICENSE              # Dual license (CC BY 4.0 + MIT)
@@ -58,10 +57,6 @@ This project uses [Vitest](https://vitest.dev/) for testing.
 - React component tests use `// @vitest-environment jsdom` directive
 - Run tests: `npm run test:run`
 - Test coverage: `npm run test:coverage`
-
-## Deployment
-
-This site is set up for easy deployment on Vercel. Just connect your GitHub repository to Vercel, and it will automatically build and deploy the site when changes are pushed.
 
 ## License
 
