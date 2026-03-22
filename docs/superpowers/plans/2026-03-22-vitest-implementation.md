@@ -257,7 +257,7 @@ git commit -m "ci: add test job to existing GitHub Actions workflow"
 
 ---
 
-## Task 10: Verify Full Test Suite
+## Task 8: Verify Full Test Suite
 
 **Files:**
 - None (verification only)
