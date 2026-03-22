@@ -37,12 +37,24 @@ This document contains important instructions and notes for Claude when working 
 To properly test changes, use these commands:
 
 ```bash
+# Run tests (watch mode for development)
+npm run test
+
+# Run tests once (used by CI)
+npm run test:run
+
 # Build the project (this is preferred over npm run dev in agent mode)
 npm run build
 
 # If you need to preview the build (only do when specifically requested)
 npm run preview
 ```
+
+**Testing framework:** Vitest with @testing-library/react and @testing-library/jest-dom
+
+**Test file location:** `__tests__/` root directory (not alongside source)
+
+**React component tests:** Use `// @vitest-environment jsdom` directive at top of test file
 
 ### Project Structure
 
@@ -106,5 +118,7 @@ npm run preview
 
 - **Astro** (latest version) - Main framework
 - **TailwindCSS** - For styling
-- **React** - For interactive components (v18.2.0)
+- **React** - For interactive components (v19.2.3)
 - **MDX** - For enhanced markdown support
+- **Vitest** - Unit and component testing
+- **@testing-library/react** - React component DOM testing

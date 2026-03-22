@@ -37,6 +37,27 @@ I'm chenmi, a full-stack developer focused on scalable web applications, practic
 | `npm run dev`     | Starts local dev server at `localhost:4321` |
 | `npm run build`   | Build the production site to `./dist/`      |
 | `npm run preview` | Preview the build locally, before deploying |
+| `npm run test`    | Run tests in watch mode                     |
+| `npm run test:run`| Run tests once (used by CI)                 |
+
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for testing.
+
+```text
+├── __tests__/              # Test root directory (outside src/)
+│   ├── utils/             # Utility function tests
+│   ├── components/ui/      # React component tests
+│   └── setup.ts           # Test setup (jest-dom matchers)
+├── vitest.config.ts        # Vitest configuration
+└── src/                   # Source code (no test files)
+```
+
+**Key points:**
+- Tests are located in `__tests__/` root directory, not alongside source files
+- React component tests use `// @vitest-environment jsdom` directive
+- Run tests: `npm run test:run`
+- Test coverage: `npm run test:coverage`
 
 ## Deployment
 
