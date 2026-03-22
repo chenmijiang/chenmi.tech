@@ -7,6 +7,6 @@ export default getViteConfig({
     exclude: ["src/**"],
     globals: true,
     setupFiles: ["__tests__/setup.ts"],
-    environmentMatchGlobs: [["__tests__/components/**/*.{ts,tsx}", "jsdom"]],
+    environment: "jsdom",
   },
 });
