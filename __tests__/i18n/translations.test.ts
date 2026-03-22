@@ -67,7 +67,7 @@ describe("i18n translation coverage", () => {
     expect(t("en", "nav.blog")).toBe("Blog");
     expect(t("zh", "nav.blog")).toBe("博客");
     expect(t("en", "home.greeting")).toBe("Hi, I'm chenmi.");
-    expect(t("zh", "home.greeting")).toBe("你好，我是 chenmi。");
+    expect(t("zh", "home.greeting")).toBe("你好，我是晨米。");
   });
 
   it("getCurrentLocale should return valid locale or default", () => {
