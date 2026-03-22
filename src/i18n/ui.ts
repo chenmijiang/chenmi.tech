@@ -62,6 +62,8 @@ export const ui = {
       bio: "Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.",
     },
     posts: {
+      title: "Posts",
+      description: "Archive of all posts published on",
       browseByDate: "Browse all blog posts by year and month",
       previousPost: "Previous Post",
       nextPost: "Next Post",
@@ -151,6 +153,8 @@ export const ui = {
       bio: "全栈开发者，使用 React、TypeScript、Node.js 构建可扩展的 Web 应用，同时关注 Rust、Docker 和 AI。",
     },
     posts: {
+      title: "文章",
+      description: "所有发布的文章归档于",
       browseByDate: "按年月浏览所有博客文章",
       previousPost: "上一篇",
       nextPost: "下一篇",

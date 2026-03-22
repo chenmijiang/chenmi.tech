@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import Card from "@/components/Card.astro";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
@@ -30,7 +29,7 @@ const months = [
 ];
 ---
 
-<Layout title={`Posts | ${SITE.title}`} description={`Archive of all posts published on ${SITE.title}.`}>
+<Layout title={`${t(locale, "posts.title")} | ${SITE.title}`} description={`${t(locale, "posts.description")} ${SITE.title}.`}>
   <Header />
   <main
     id="main-content"
