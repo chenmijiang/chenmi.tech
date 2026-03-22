@@ -144,13 +144,17 @@ const structuredData = {
 
     <script is:inline src="/toggle-theme.js"></script>
 
-    <script is:inline>
-      // Client-side browser language detection: redirect root to /zh/ for Chinese browsers
-      if (window.location.pathname === "/" || window.location.pathname === "") {
-        const lang = navigator.language || navigator.userLanguage || "";
-        if (lang.toLowerCase().startsWith("zh") && !sessionStorage.getItem("locale-override")) {
-          window.location.replace("/zh");
-        }
+    <script>
+      import { getLocalePreference, getRootLocaleRedirect } from "@/i18n/localePreference";
+
+      const redirectPath = getRootLocaleRedirect({
+        pathname: window.location.pathname,
+        navigatorLanguage: navigator.language || "",
+        storedLocale: getLocalePreference(localStorage),
+      });
+
+      if (redirectPath) {
+        window.location.replace(redirectPath);
       }
     </script>
 

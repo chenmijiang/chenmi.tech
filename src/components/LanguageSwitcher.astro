@@ -1,6 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
+import { LOCALE_PREFERENCE_KEY } from "@/i18n/localePreference";
 import { defaultLocale, type Locale } from "@/i18n/ui";
 import { stripTrailingSlash } from "@/i18n/utils";
 
@@ -19,7 +20,7 @@ const alternateLabel = alternateLocale === "en" ? "English" : "中文";
   class="rounded-md p-2 text-gray-600 dark:text-gray-300 transition-colors hover:bg-secondary hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none"
   aria-label={`Switch to ${alternateLabel}`}
   title={`Switch to ${alternateLabel}`}
-  onclick="sessionStorage.setItem('locale-override','1')"
+  onclick={`localStorage.setItem('${LOCALE_PREFERENCE_KEY}','${alternateLocale}')`}
 >
   <IconGlobe class="h-5 w-5" />
   <span class="sr-only">{alternateLabel}</span>
