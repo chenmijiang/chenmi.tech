@@ -1,9 +1,8 @@
 ---
-title: "Hello, chenmi.tech"
-description: "A short introduction to this site and what chenmi plans to publish here."
+title: 'Hello, chenmi.tech'
+description: 'A short introduction to this site and what chenmi plans to publish here.'
 pubDatetime: 2026-03-20T23:50:00+08:00
-tags: ["meta", "website"]
-featured: true
+tags: ['meta', 'website']
 draft: false
 ---
 
