@@ -81,8 +81,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,tsx,json}": [
-      "biome check --write --files-ignore-unknown=true"
+    "src/**/*.{js,ts,tsx,json,astro,css,scss,mdx,md}": [
+      "biome check --write src"
     ]
   }
 }
