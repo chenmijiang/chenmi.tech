@@ -15,7 +15,7 @@ Add Vitest-based testing framework to enable regression testing for utility func
 | `jsdom` | DOM environment for React component tests |
 | `@testing-library/react` | React component DOM testing |
 | `@testing-library/jest-dom` | Extended DOM assertions |
-| `@vitejs/plugin-react` | React JSX transform for Vitest |
+| `@testing-library/user-event` | Simulate user interactions for React tests |
 | `@vitest/coverage-v8` | Code coverage reporting |
 
 ## Directory Structure
@@ -49,9 +49,17 @@ export default getViteConfig({
     exclude: ["src/**"],
     globals: true,
     setupFiles: ["__tests__/setup.ts"],
+    environmentMatchGlobs: [
+      ["__tests__/components/**/*.{ts,tsx}", "jsdom"],
+    ],
   },
 });
 ```
+
+**Environment strategy:**
+
+- `jsdom` — React component tests (`__tests__/components/**`)
+- `node` (default) — Utility function tests, Astro component tests
 
 **Key design decisions:**
 
@@ -72,7 +80,7 @@ This registers custom jest-dom matchers (e.g., `toBeInTheDocument()`, `toHaveTex
 ## Required Dependencies
 
 ```bash
-npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @vitejs/plugin-react @vitest/coverage-v8
+npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event @vitest/coverage-v8
 ```
 
 ## Test Layering
@@ -122,6 +130,7 @@ describe("getPath", () => {
 // __tests__/components/ui/mobile-menu.test.tsx
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import MobileMenu from "@/components/ui/mobile-menu";
 
 describe("MobileMenu", () => {
@@ -131,7 +140,8 @@ describe("MobileMenu", () => {
   });
 
   it("shows menu when opened", async () => {
-    const { user } = await render(<MobileMenu />);
+    const user = userEvent.setup();
+    render(<MobileMenu />);
     await user.click(screen.getByRole("button"));
     expect(screen.getByRole("navigation")).toBeInTheDocument();
   });
@@ -220,11 +230,11 @@ jobs:
 
 ## Build Exclusion
 
-Test files are excluded from production build by:
+Test files are excluded from production build because:
 
-1. **Location** — Tests are in `__tests__/` (root), not `src/`. Astro's build only processes `src/` by default.
-2. **Vitest config** — `include: ["__tests__/**"]` and `exclude: ["src/**"]` ensure tests are only discovered from the correct location.
-3. **No import from tests** — Source files never import from test files.
+1. **Location** — Tests are in `__tests__/` (root), outside Astro's source directory `src/`. Astro's build only includes `src/` by default.
+2. **No entry point** — Test files are never imported by source files; they are leaf nodes in the dependency graph.
+3. **Vitest discovery** — `include` and `exclude` patterns in `vitest.config.ts` only affect test file discovery, not the production build.
 
 ## Success Criteria
 
