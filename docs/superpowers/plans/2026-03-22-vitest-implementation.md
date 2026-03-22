@@ -102,9 +102,10 @@ Add to `scripts` section:
 ```json
 "test": "vitest",
 "test:run": "vitest run",
-"test:ui": "vitest --ui",
 "test:coverage": "vitest run --coverage"
 ```
+
+Note: `test:ui` is omitted — it requires `@vitest/ui` package. Add later if needed.
 
 - [ ] **Step 2: Verify scripts work**
 
@@ -213,157 +214,45 @@ git commit -m "test: add MobileMenu component tests"
 
 ---
 
-## Task 7: Write Minimal Test for Layout Component
+## Task 7: Update GitHub Actions to Run Tests
 
 **Files:**
-- Create: `__tests__/layouts/Layout.test.ts`
-- Test: `src/layouts/Layout.astro`
+- Modify: `.github/workflows/astro-build.yml`
 
-- [ ] **Step 1: Write minimal test to verify Container API works**
+- [ ] **Step 1: Add test job to existing workflow**
 
-```typescript
-import { describe, it, expect } from "vitest";
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
-import Layout from "@/layouts/Layout.astro";
-
-describe("Layout", () => {
-  it("renders html lang attribute", async () => {
-    const container = await AstroContainer.create();
-    const result = await container.renderToString(Layout);
-    expect(result).toContain('<html lang="en"');
-  });
-});
-```
-
-- [ ] **Step 2: Run test to verify it works**
-
-```bash
-npm run test:run -- __tests__/layouts/Layout.test.ts
-```
-Expected: Test passes
-
-If test fails with `Astro.url` or `Astro.currentLocale` errors, note the issue and proceed to Task 8 to add request/renderer configuration.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add __tests__/layouts/Layout.test.ts
-git commit -m "test: add Layout component smoke test"
-```
-
----
-
-## Task 8: Fix Layout Test if Needed (Conditional)
-
-**Files:**
-- Modify: `__tests__/layouts/Layout.test.ts`
-
-If Task 7 fails, diagnose the error:
-
-**If error mentions `Astro.url` or `Astro.currentLocale`:**
-
-- [ ] **Step 1: Add request configuration**
-
-```typescript
-import { describe, it, expect } from "vitest";
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
-import { getContainerRenderer as reactContainerRenderer } from "@astrojs/react";
-import { loadRenderers } from "astro:container";
-import Layout from "@/layouts/Layout.astro";
-
-describe("Layout", () => {
-  it("renders html lang attribute", async () => {
-    const renderers = await loadRenderers([reactContainerRenderer()]);
-    const container = await AstroContainer.create({ renderers });
-    const result = await container.renderToString(Layout, {
-      request: new Request("https://example.com/"),
-    });
-    expect(result).toContain('<html lang="en"');
-  });
-});
-```
-
-- [ ] **Step 2: Run test to verify it works**
-
-```bash
-npm run test:run -- __tests__/layouts/Layout.test.ts
-```
-Expected: Test passes
-
-**If error mentions missing renderers or Container API incompatibility:**
-
-- [ ] **Step 1: Simplify test to minimal assertion**
-
-The Layout component imports global CSS and uses Astro runtime features that may not be fully supported by the experimental Container API. For initial setup, test the minimal unit that renders without runtime context:
-
-```typescript
-import { describe, it, expect } from "vitest";
-
-describe("Layout", () => {
-  it("placeholder - Container API requires Astro runtime", () => {
-    expect(true).toBe(true);
-  });
-});
-```
-
-- [ ] **Step 2: Document the limitation**
-
-Add a comment noting that full Layout testing requires the Astro runtime environment and should be tested via build output inspection or integration tests instead.
-
-- [ ] **Step 3: Commit if modified**
-
-```bash
-git add __tests__/layouts/Layout.test.ts
-git commit -m "test: add minimal Layout test - full Astro runtime testing deferred"
-```
-
----
-
-## Task 9: Create GitHub Actions Workflow
-
-**Files:**
-- Create: `.github/workflows/test.yml`
-
-- [ ] **Step 1: Create test workflow**
+Add a `test` job that runs before `build`:
 
 ```yaml
-name: Test
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-env:
-  NODE_VERSION: "20"
-
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
+      - run: npm ci
+      - run: npm run test:run
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test:run
+  build:
+    needs: test
+    # ... existing build steps
 ```
 
-- [ ] **Step 2: Commit**
+- [ ] **Step 2: Verify workflow syntax**
 
 ```bash
-git add .github/workflows/test.yml
-git commit -m "ci: add test workflow to GitHub Actions"
+npm run build:check  # This validates the overall config
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add .github/workflows/astro-build.yml
+git commit -m "ci: add test job to existing GitHub Actions workflow"
 ```
 
 ---
@@ -387,12 +276,12 @@ npm run build
 ```
 Expected: Build completes without errors
 
-- [ ] **Step 3: Verify config files are valid**
+- [ ] **Step 3: Verify vitest config loads correctly**
 
 ```bash
-node --check vitest.config.ts
+npm run test:run -- --run --passWithNoTests
 ```
-Expected: No syntax errors
+Expected: Tests collected (0 tests if no test files yet), no config errors
 
 - [ ] **Step 4: Run lint on new test files**
 
@@ -409,13 +298,14 @@ Note: `npm run lint` only checks `src/` directory. Test files and config files a
 
 | Task | Files | Description |
 |------|-------|-------------|
-| 1 | package.json | Install dependencies |
+| 1 | package.json, package-lock.json | Install dependencies |
 | 2 | __tests__/setup.ts | Setup file with jest-dom |
 | 3 | vitest.config.ts | Vitest configuration |
 | 4 | package.json | Add npm scripts |
 | 5 | __tests__/utils/getPath.test.ts | Utility function test |
 | 6 | __tests__/components/ui/mobile-menu.test.tsx | React component test |
-| 7 | __tests__/layouts/Layout.test.ts | Astro component smoke test |
-| 8 | __tests__/layouts/Layout.test.ts (conditional) | Fix Layout test if needed |
-| 9 | .github/workflows/test.yml | CI workflow |
-| 10 | - | Verify everything works |
+| 7 | .github/workflows/astro-build.yml | Add test job to CI |
+| 8 | - | Verify everything works |
+
+**Deferred:**
+- Astro Layout component testing — requires Astro runtime context, cannot be reliably unit tested

@@ -17,6 +17,7 @@ Add Vitest-based testing framework to enable regression testing for utility func
 | `@testing-library/jest-dom` | Extended DOM assertions |
 | `@testing-library/user-event` | Simulate user interactions for React tests |
 | `@vitest/coverage-v8` | Code coverage reporting |
+| `@vitest/ui` | Optional: browser-based test UI (only if `test:ui` script is used) |
 
 ## Directory Structure
 
@@ -87,11 +88,15 @@ npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @te
 
 Tests are organized by type with appropriate environments:
 
-| Layer | Location | Environment | Tool |
-|-------|----------|--------------|------|
-| Utility functions | `__tests__/utils/*.test.ts` | node | Vitest assertions |
-| React components | `__tests__/components/ui/*.test.tsx` | jsdom | @testing-library/react |
-| Astro components | `__tests__/layouts/*.test.ts` | node + Container API | Vitest + astro/container |
+| Layer | Location | Environment | Tool | Status |
+|-------|----------|-------------|------|--------|
+| Utility functions | `__tests__/utils/*.test.ts` | node | Vitest assertions | Phase 1 |
+| React components | `__tests__/components/ui/*.test.tsx` | jsdom | @testing-library/react | Phase 1 |
+| Astro components | `__tests__/layouts/*.test.ts` | node + Container API | Vitest + astro/container | Deferred |
+
+**Deferred: Astro Layout Testing**
+
+Layout.astro depends on Astro runtime features (`Astro.url`, `Astro.currentLocale`, URL derivation, global CSS imports) that cannot be reliably mocked in a unit test environment. Full layout testing should use build output inspection or integration tests. This will be revisited after Phase 1 validates the test framework.
 
 ## Example Tests
 
@@ -150,34 +155,9 @@ describe("MobileMenu", () => {
 
 ### 3. Astro Component
 
-**Target:** `src/layouts/Layout.astro`
+**Phase 1:** Deferred. Layout.astro requires Astro runtime context that cannot be reliably unit tested.
 
-Uses `experimental_AstroContainer` from `astro/container` (Astro's official testing API):
-
-```typescript
-// __tests__/layouts/Layout.test.ts
-import { describe, it, expect } from "vitest";
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
-import Layout from "@/layouts/Layout.astro";
-
-describe("Layout", () => {
-  it("renders html lang attribute", async () => {
-    const container = await AstroContainer.create();
-    const result = await container.renderToString(Layout);
-    expect(result).toContain('<html lang="en"');
-  });
-
-  it("renders slot content", async () => {
-    const container = await AstroContainer.create();
-    const result = await container.renderToString(Layout, {
-      slots: { default: "<main>Test content</main>" },
-    });
-    expect(result).toContain("Test content");
-  });
-});
-```
-
-**Note:** The Container API is experimental (`astro@4.9.0+`). Verify API compatibility when upgrading Astro.
+**Future consideration:** Build output inspection or integration tests for layout verification.
 
 ## npm Scripts
 
@@ -192,41 +172,29 @@ describe("Layout", () => {
 
 ## CI Integration
 
-Tests run in GitHub Actions on every push and PR:
+Tests run in GitHub Actions as a separate job that extends the existing build workflow via matrix or job dependency:
 
 ```yaml
-# .github/workflows/test.yml
-name: Test
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-env:
-  NODE_VERSION: "20"
-
+# Option A: Add as separate job in existing workflow (.github/workflows/astro-build.yml)
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
+      - run: npm ci
+      - run: npm run test:run
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test:run
+  build:
+    needs: test  # Ensures tests pass before building
+    # ... existing build steps
 ```
+
+Alternatively, add test as a matrix strategy alongside the build job.
 
 ## Build Exclusion
 
@@ -238,7 +206,7 @@ Test files are excluded from production build because:
 
 ## Success Criteria
 
-1. `npm run test` runs all tests without errors
+1. `npm run test:run` runs utility and React component tests without errors
 2. `npm run test:run` passes in CI (GitHub Actions)
 3. Test files in `__tests__/` are not included in production build
 4. TypeScript types are correctly resolved via `@/` alias
@@ -250,4 +218,5 @@ Test files are excluded from production build because:
 - Snapshot testing
 - Performance benchmarking
 - TDD workflow setup
-- `@astrojs/test` package (not needed — using astro/container directly)
+- Astro component/layout testing (deferred — requires runtime context)
+- `test:ui` script (optional, requires separate `@vitest/ui` package installation)
