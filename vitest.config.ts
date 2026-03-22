@@ -7,6 +7,5 @@ export default getViteConfig({
     exclude: ["src/**"],
     globals: true,
     setupFiles: ["__tests__/setup.ts"],
-    environment: "jsdom",
   },
 });
