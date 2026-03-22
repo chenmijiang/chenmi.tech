@@ -17,7 +17,10 @@
     "format": "biome format --write src",
     "check": "biome check src",
     "check:fix": "biome check --write src",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
