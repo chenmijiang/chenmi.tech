@@ -15,6 +15,9 @@ Add Vitest-based testing framework to enable regression testing for utility func
 | `@astrojs/test` | Astro component testing |
 | `@testing-library/react` | React component DOM testing |
 | `@testing-library/jest-dom` | Extended DOM assertions |
+| `jsdom` | DOM environment for React component tests |
+| `@vitejs/plugin-react` | React JSX transform for Vitest |
+| `@vitest/coverage-v8` | Code coverage reporting |
 
 ## Directory Structure
 
@@ -40,14 +43,14 @@ chenmi.tech/
 
 ```typescript
 import { defineConfig } from 'vitest/config';
-import react from '@astrojs/react';
+import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   test: {
     include: ['__tests__/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['src/**'],
-    environment: 'node',
+    environment: 'jsdom',
     globals: true,
   },
   plugins: [
@@ -107,13 +110,13 @@ Location: `__tests__/layouts/*.test.ts`
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { getComponentOutput } from '@astrojs/test';
+import { setup } from '@astrojs/test';
 import { BaseLayout } from '@/layouts/BaseLayout.astro';
 
 describe('BaseLayout', () => {
   it('renders layout', async () => {
-    const output = await getComponentOutput(BaseLayout);
-    expect(output.code).toContain('<html');
+    const { element } = await setup({ component: BaseLayout });
+    expect(element.innerHTML).toContain('<html');
   });
 });
 ```
@@ -124,16 +127,18 @@ Location: `__tests__/pages/*.test.ts`
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { getPageOutput } from '@astrojs/test';
+import { createPage } from '@astrojs/test';
 import Index from '@/pages/index.astro';
 
 describe('Index page', () => {
   it('renders without errors', async () => {
-    const output = await getPageOutput(Index);
-    expect(output.code).toContain('<main');
+    const page = await createPage({ component: Index });
+    expect(page.html()).toContain('<main');
   });
 });
 ```
+
+> **Note:** Astro component and page test APIs may vary. Verify exact API usage against `@astrojs/test` documentation after installation.
 
 ## npm Scripts
 
@@ -146,6 +151,12 @@ describe('Index page', () => {
 }
 ```
 
+## Required Dependencies
+
+```bash
+npm install -D vitest @astrojs/test @testing-library/react @testing-library/jest-dom jsdom @vitejs/plugin-react @vitest/coverage-v8
+```
+
 ## Build Exclusion
 
 Test files are excluded from production build by:
@@ -155,7 +166,23 @@ Test files are excluded from production build by:
 
 ## CI Integration (Deferred)
 
-No immediate CI integration. Future step will add test job to `.github/workflows/` parallel to existing `build` and `lint` jobs.
+No immediate CI integration. Future step will add test job to `.github/workflows/`:
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:run
+```
+
+Trigger: `on: [push, pull_request]` (same as existing build/lint workflows).
 
 ## Success Criteria
 
