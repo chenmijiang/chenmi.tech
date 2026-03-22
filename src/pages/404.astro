@@ -5,7 +5,7 @@ import Header from "@/components/Header.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import { SITE } from "@/config";
 import { defaultLocale, type Locale } from "@/i18n/ui";
-import { t } from "@/i18n/utils";
+import { stripTrailingSlash, t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
@@ -23,7 +23,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       <span aria-hidden="true">¯\_(ツ)_/¯</span>
       <p class="mt-4 text-2xl sm:text-3xl">{t(locale, "notFound.title")}</p>
       <LinkButton
-        href={getRelativeLocaleUrl(locale, "")}
+        href={stripTrailingSlash(getRelativeLocaleUrl(locale, ""))}
         class="my-6 text-lg underline decoration-dashed underline-offset-8"
       >
         {t(locale, "home.goHome")}

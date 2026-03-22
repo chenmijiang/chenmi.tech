@@ -3,6 +3,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import rss from "@astrojs/rss";
 import { SITE } from "@/config";
 import { defaultLocale } from "@/i18n/ui";
+import { stripTrailingSlash } from "@/i18n/utils";
 import { getPath } from "@/utils/getPath";
 import getSortedPosts from "@/utils/getSortedPosts";
 
@@ -18,7 +19,9 @@ export async function GET() {
     customData: `<atom:link href="${SITE.website}zh/rss.xml" rel="alternate" type="application/rss+xml" hreflang="zh" />`,
     items: sortedPosts.map(({ data, id, filePath }) => {
       const postPath = getPath(id, filePath);
-      const localePath = getRelativeLocaleUrl(defaultLocale, postPath.replace(/^\//, ""));
+      const localePath = stripTrailingSlash(
+        getRelativeLocaleUrl(defaultLocale, postPath.replace(/^\//, ""))
+      );
       return {
         link: new URL(localePath, siteURL).toString(),
         title: data.title,

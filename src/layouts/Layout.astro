@@ -68,10 +68,10 @@ const structuredData = {
 
     {(() => {
       const pathname = Astro.url.pathname;
-      const enPath = pathname.replace(/^\/zh\//, "/");
-      const zhPath = pathname.startsWith("/zh/") 
-        ? pathname 
-        : `/zh${pathname}`;
+      const enPath = pathname.replace(/^\/zh(\/|$)/, "/");
+      const zhPath = pathname.startsWith("/zh")
+        ? pathname
+        : `/zh${pathname === "/" ? "" : pathname}`;
       return (
         <>
           <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.url)} />
@@ -150,7 +150,7 @@ const structuredData = {
       if (window.location.pathname === "/" || window.location.pathname === "") {
         const lang = navigator.language || navigator.userLanguage || "";
         if (lang.toLowerCase().startsWith("zh") && !sessionStorage.getItem("locale-override")) {
-          window.location.replace("/zh/");
+          window.location.replace("/zh");
         }
       }
     </script>

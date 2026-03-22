@@ -15,7 +15,7 @@ import Tag from "@/components/Tag.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 import { defaultLocale, type Locale } from "@/i18n/ui";
-import { t } from "@/i18n/utils";
+import { stripTrailingSlash, t } from "@/i18n/utils";
 import { getPath } from "@/utils/getPath";
 import { calculateReadingTime } from "@/utils/readingTime";
 import { slugifyStr } from "@/utils/slugify";
@@ -34,7 +34,7 @@ const getLocalePostUrl = (slug: string) => {
   const postPath = `/posts/${slug}`;
   return locale === defaultLocale 
     ? postPath 
-    : getRelativeLocaleUrl(locale, postPath.replace(/^\//, ""));
+    : stripTrailingSlash(getRelativeLocaleUrl(locale, postPath.replace(/^\//, "")));
 };
 
 const {
@@ -144,7 +144,7 @@ const wordCount = (post.body ?? "").split(/\s+/).length;
           readingTime && (
             <>
               <span class="text-foreground/30">•</span>
-              <span class="text-sm text-foreground/60">{readingTime}</span>
+              <span class="text-sm text-foreground/60">{readingTime} {t(locale, "card.readingTime")}</span>
             </>
           )
         }

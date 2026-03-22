@@ -7,7 +7,7 @@ import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import { SITE } from "@/config";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { t } from "@/i18n/utils";
+import { stripTrailingSlash, t } from "@/i18n/utils";
 import { defaultLocale } from "@/i18n/ui";
 import Hr from "./Hr.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
@@ -41,7 +41,7 @@ const isActive = (path: string) => {
       class="relative flex w-full items-baseline justify-between bg-background p-4 sm:items-center sm:py-6"
     >
       <a
-        href={getRelativeLocaleUrl(locale, "")}
+        href={stripTrailingSlash(getRelativeLocaleUrl(locale, ""))}
         class="absolute py-1 text-2xl leading-7 font-semibold whitespace-nowrap sm:static"
       >
         {SITE.title}
@@ -72,7 +72,7 @@ const isActive = (path: string) => {
           ]}
         >
           <li class="col-span-2">
-            <a href={getRelativeLocaleUrl(locale, "posts")} class:list={{ "active-nav": isActive("/posts") }}>
+            <a href={stripTrailingSlash(getRelativeLocaleUrl(locale, "posts"))} class:list={{ "active-nav": isActive("/posts") }}>
               {t(locale, "nav.blog")}
             </a>
           </li>
@@ -82,7 +82,7 @@ const isActive = (path: string) => {
             </a>
           </li> -->
           <li class="col-span-2">
-            <a href={getRelativeLocaleUrl(locale, "about")} class:list={{ "active-nav": isActive("/about") }}>
+            <a href={stripTrailingSlash(getRelativeLocaleUrl(locale, "about"))} class:list={{ "active-nav": isActive("/about") }}>
               {t(locale, "nav.about")}
             </a>
           </li>
@@ -90,7 +90,7 @@ const isActive = (path: string) => {
             SITE.showArchives && (
               <li class="col-span-2">
                 <LinkButton
-                  href={getRelativeLocaleUrl(locale, "archives")}
+                  href={stripTrailingSlash(getRelativeLocaleUrl(locale, "archives"))}
                   class:list={[
                     "focus-outline flex justify-center p-3 sm:p-1",
                     {
@@ -108,7 +108,7 @@ const isActive = (path: string) => {
           }
           <li class="col-span-1 flex items-center justify-center">
             <LinkButton
-              href={getRelativeLocaleUrl(locale, "search")}
+              href={stripTrailingSlash(getRelativeLocaleUrl(locale, "search"))}
               class:list={[
                 "focus-outline flex p-3 sm:p-1",
                 { "[&>svg]:stroke-accent": isActive("/search") },

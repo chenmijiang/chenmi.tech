@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type Locale, ui } from "@/i18n/ui";
-import { getCurrentLocale, t } from "@/i18n/utils";
+import { getCurrentLocale, stripTrailingSlash, t } from "@/i18n/utils";
 
 /**
  * Recursively collect all leaf keys from a nested object.
@@ -101,4 +101,26 @@ describe("i18n translation coverage", () => {
       expect(enCategoryKeys.length).toBe(zhCategoryKeys.length);
     });
   }
+});
+
+describe("stripTrailingSlash", () => {
+  it("should remove trailing slash from paths", () => {
+    expect(stripTrailingSlash("/zh/")).toBe("/zh");
+    expect(stripTrailingSlash("/zh/posts/")).toBe("/zh/posts");
+    expect(stripTrailingSlash("/posts/")).toBe("/posts");
+  });
+
+  it("should not modify root path", () => {
+    expect(stripTrailingSlash("/")).toBe("/");
+  });
+
+  it("should not modify paths without trailing slash", () => {
+    expect(stripTrailingSlash("/zh")).toBe("/zh");
+    expect(stripTrailingSlash("/zh/posts")).toBe("/zh/posts");
+    expect(stripTrailingSlash("/posts")).toBe("/posts");
+  });
+
+  it("should handle empty string", () => {
+    expect(stripTrailingSlash("")).toBe("");
+  });
 });

@@ -5,7 +5,7 @@
 	import FormattedDate from "../../components/FormattedDate.astro";
 	import { SITE } from "../../consts";
 	import { defaultLocale, type Locale } from "@/i18n/ui";
-	import { t } from "@/i18n/utils";
+	import { stripTrailingSlash, t } from "@/i18n/utils";
 	import Layout from "../../layouts/Layout.astro";
 
 	export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
@@ -47,7 +47,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
         posts.map((post) => (
           <article class="border-b border-border pb-8 last:border-0">
             <h2 class="text-2xl font-semibold leading-tight mb-2">
-              <a href={getRelativeLocaleUrl(locale, `posts/${post.id}`)} class="hover:text-primary">
+              <a href={stripTrailingSlash(getRelativeLocaleUrl(locale, `posts/${post.id}`))} class="hover:text-primary">
                 {post.data.title}
               </a>
             </h2>
@@ -62,7 +62,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 
             <div>
               <a
-                href={getRelativeLocaleUrl(locale, `posts/${post.id}`)}
+                href={stripTrailingSlash(getRelativeLocaleUrl(locale, `posts/${post.id}`))}
                 class="text-primary font-medium hover:underline"
               >
                 {t(locale, "pagination.readMore")} →
@@ -77,7 +77,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       {
         currentPage > 1 && (
           <a
-            href={currentPage - 1 === 1 ? getRelativeLocaleUrl(locale, "") : getRelativeLocaleUrl(locale, `page/${currentPage - 1}`)}
+            href={currentPage - 1 === 1 ? stripTrailingSlash(getRelativeLocaleUrl(locale, "")) : stripTrailingSlash(getRelativeLocaleUrl(locale, `page/${currentPage - 1}`))}
             class="px-4 py-2 bg-secondary rounded-md hover:bg-accent"
           >
             ← {t(locale, "pagination.previous")}
@@ -88,7 +88,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       {
         Array.from({ length: lastPage }).map((_, i) => (
           <a
-            href={i === 0 ? getRelativeLocaleUrl(locale, "") : getRelativeLocaleUrl(locale, `page/${i + 1}`)}
+            href={i === 0 ? stripTrailingSlash(getRelativeLocaleUrl(locale, "")) : stripTrailingSlash(getRelativeLocaleUrl(locale, `page/${i + 1}`))}
             class={`px-4 py-2 rounded-md ${
               currentPage === i + 1
                 ? "bg-primary text-primary-foreground"
@@ -103,7 +103,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       {
         currentPage < lastPage && (
           <a
-            href={getRelativeLocaleUrl(locale, `page/${currentPage + 1}`)}
+            href={stripTrailingSlash(getRelativeLocaleUrl(locale, `page/${currentPage + 1}`))}
             class="px-4 py-2 bg-secondary rounded-md hover:bg-accent"
           >
             {t(locale, "pagination.next")} →
