@@ -1,18 +1,21 @@
 ---
 import { SITE, SOCIALS } from "@/config";
+import { defaultLocale, type Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 
 export interface Props {
   variant?: "default" | "compact";
 }
 
 const { variant = "default" } = Astro.props;
+const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const activeSocials = SOCIALS.filter(({ active, href }) => active && href).slice(0, 3);
 ---
 
 <div class={variant === 'default' ? 'newsletter-box bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-6 my-8' : 'newsletter-compact mt-6'}>
   {variant === 'default' && (
     <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-      Follow along for new posts, project notes, and updates from {SITE.title}.
+      {t(locale, "newsletter.followAlong")} {SITE.title}.
     </p>
   )}
   <div class="flex flex-col sm:flex-row gap-3">
@@ -32,7 +35,7 @@ const activeSocials = SOCIALS.filter(({ active, href }) => active && href).slice
   
   {variant === 'default' && (
     <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
-      No newsletter setup yet. RSS and social links are the current best way to keep up.
+      {t(locale, "newsletter.noNewsletter")}
     </p>
   )}
 </div>
