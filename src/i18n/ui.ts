@@ -22,7 +22,7 @@ export const ui = {
       pageSuffix: "",
     },
     footer: {
-      viewSource: "View source on GitHub",
+      viewSource: "Deployed with Alibaba Cloud",
     },
     datetime: {
       published: "Published:",
@@ -63,7 +63,7 @@ export const ui = {
       rssFeed: "RSS Feed",
       goHome: "Go back home",
       greeting: "Hi, I'm chenmi.",
-      bio: "Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.",
+      bio: "A full-stack developer who enjoys exploring the intersection between elegant front-ends and robust back-ends, and is passionate about using modern technologies to build scalable web applications.",
     },
     posts: {
       title: "Posts",
@@ -118,7 +118,7 @@ export const ui = {
       pageSuffix: "页",
     },
     footer: {
-      viewSource: "在 GitHub 上查看源码",
+      viewSource: "部署在阿里云上",
     },
     datetime: {
       published: "发布于：",
@@ -158,7 +158,7 @@ export const ui = {
       rssFeed: "RSS 订阅",
       goHome: "返回首页",
       greeting: "你好，我是晨米。",
-      bio: "全栈开发者，使用 React、TypeScript、Node.js 构建可扩展的 Web 应用，同时关注 Rust、Docker 和 AI。",
+      bio: "一名全栈开发者，喜欢探索前端优雅和后端健壮之间的交集，热爱使用现代技术打造可扩展 Web 应用程序。",
     },
     posts: {
       title: "文章",
