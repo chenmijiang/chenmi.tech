@@ -47,7 +47,7 @@ export const SHARE_LINKS = [
   },
   {
     name: "QQ",
-    href: "https://connect.qq.com/widget/shareqq/index.html?url=",
+    href: "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=",
     linkTitle: `Share this post on QQ`,
     icon: "qq",
   },

@@ -30,11 +30,11 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
+  --background: #040710;
+  --foreground: #c6ccd8;
+  --accent: #66ccff;
   --muted: #343f60bf;
-  --border: #ab4b08;
+  --border: #4b86a4;
 }
 
 @theme {
