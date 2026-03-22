@@ -41,13 +41,20 @@ describe("i18n translation coverage", () => {
     expect(missingInEn, `Missing in en: ${missingInEn.join(", ")}`).toEqual([]);
   });
 
+  // Keys that are intentionally empty (e.g., pageSuffix is "" in English)
+  const allowedEmptyKeys = ["pagination.pageSuffix"];
+
   it("should have no empty string values in en", () => {
-    const emptyKeys = enKeys.filter((key) => t("en", key) === "");
+    const emptyKeys = enKeys.filter(
+      (key) => t("en", key) === "" && !allowedEmptyKeys.includes(key)
+    );
     expect(emptyKeys, `Empty values in en: ${emptyKeys.join(", ")}`).toEqual([]);
   });
 
   it("should have no empty string values in zh", () => {
-    const emptyKeys = zhKeys.filter((key) => t("zh", key) === "");
+    const emptyKeys = zhKeys.filter(
+      (key) => t("zh", key) === "" && !allowedEmptyKeys.includes(key)
+    );
     expect(emptyKeys, `Empty values in zh: ${emptyKeys.join(", ")}`).toEqual([]);
   });
 

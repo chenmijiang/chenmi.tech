@@ -18,6 +18,8 @@ export const ui = {
       latestPosts: "Latest Posts",
       readMore: "Read more",
       previous: "Previous",
+      page: "Page",
+      pageSuffix: "",
     },
     footer: {
       viewSource: "View source on GitHub",
@@ -41,7 +43,9 @@ export const ui = {
       },
     },
     search: {
+      title: "Search",
       placeholder: "Search posts...",
+      description: "Search posts and notes published on",
       inputPlaceholder: "Search posts, e.g. 'React' or 'AI'",
       devWarning:
         "DEV mode Warning! You need to build the project at least once to see the search results during development.",
@@ -110,6 +114,8 @@ export const ui = {
       latestPosts: "最新文章",
       readMore: "阅读更多",
       previous: "上一页",
+      page: "第",
+      pageSuffix: "页",
     },
     footer: {
       viewSource: "在 GitHub 上查看源码",
@@ -133,7 +139,9 @@ export const ui = {
       },
     },
     search: {
+      title: "搜索",
       placeholder: "搜索文章...",
+      description: "搜索发布在",
       inputPlaceholder: "搜索文章，例如 'React' 或 'AI'",
       devWarning: "开发模式提示！您需要至少构建一次项目才能在开发过程中看到搜索结果。",
     },

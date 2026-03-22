@@ -38,7 +38,7 @@ const { data: posts, currentPage, lastPage } = page;
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
 ---
 
-<Layout title={`Page ${currentPage} | ${SITE.title}`} description={SITE.desc}>
+<Layout title={`${t(locale, "pagination.page")} ${currentPage} ${t(locale, "pagination.pageSuffix")}| ${SITE.title}`} description={SITE.desc}>
   <section class="py-8">
     <h1 class="text-4xl font-bold tracking-tight mb-10">{t(locale, "pagination.latestPosts")}</h1>
 

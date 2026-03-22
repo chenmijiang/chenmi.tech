@@ -12,7 +12,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 ---
 
-<Layout title={`Search | ${SITE.title}`} description={`Search posts and notes published on ${SITE.title}.`}>
+<Layout title={`${t(locale, "search.title")} | ${SITE.title}`} description={`${t(locale, "search.description")} ${SITE.title}.`}>
   <Header />
   <Main pageTitle={t(locale, "nav.search")} pageDesc={t(locale, "search.placeholder")}>
     <div id="pagefind-search" transition:persist data-backurl={backUrl} data-search-placeholder={t(locale, "search.inputPlaceholder")} data-dev-warning={t(locale, "search.devWarning")}></div>
