@@ -1,4 +1,5 @@
 ---
+import { getRelativeLocaleUrl } from "astro:i18n";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
@@ -6,9 +7,8 @@ import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import { SITE } from "@/config";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { stripTrailingSlash, t } from "@/i18n/utils";
 import { defaultLocale } from "@/i18n/ui";
+import { stripTrailingSlash, t } from "@/i18n/utils";
 import Hr from "./Hr.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import LinkButton from "./LinkButton.astro";

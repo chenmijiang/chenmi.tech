@@ -6,7 +6,7 @@ async function loadLocalFont(weight: number): Promise<ArrayBuffer> {
     process.cwd(),
     "public",
     "fonts",
-    weight >= 700 ? "atkinson-bold.woff" : "atkinson-regular.woff",
+    weight >= 700 ? "atkinson-bold.woff" : "atkinson-regular.woff"
   );
   const data = await readFile(fontPath);
   return Uint8Array.from(data).buffer;

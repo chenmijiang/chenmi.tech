@@ -18,8 +18,18 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
 const monthKeys = [
-  "january", "february", "march", "april", "may", "june",
-  "july", "august", "september", "october", "november", "december",
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
 ] as const;
 ---
 

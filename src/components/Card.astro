@@ -23,9 +23,10 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const readingTimeText = t(locale, "card.readingTime");
 
 const postPath = getPath(id, filePath);
-const localePostPath = locale === defaultLocale 
-  ? postPath 
-  : stripTrailingSlash(getRelativeLocaleUrl(locale, postPath.replace(/^\//, "")));
+const localePostPath =
+  locale === defaultLocale
+    ? postPath
+    : stripTrailingSlash(getRelativeLocaleUrl(locale, postPath.replace(/^\//, "")));
 
 const headerProps = {
   style: { viewTransitionName: slugifyStr(title) },

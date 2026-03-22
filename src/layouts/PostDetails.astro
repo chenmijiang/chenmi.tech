@@ -13,9 +13,9 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import StructuredData from "@/components/StructuredData.astro";
 import Tag from "@/components/Tag.astro";
 import { SITE } from "@/config";
-import Layout from "@/layouts/Layout.astro";
 import { defaultLocale, type Locale } from "@/i18n/ui";
 import { stripTrailingSlash, t } from "@/i18n/utils";
+import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
 import { calculateReadingTime } from "@/utils/readingTime";
 import { slugifyStr } from "@/utils/slugify";
@@ -32,8 +32,8 @@ const backToTopText = t(locale, "nav.backToTop");
 
 const getLocalePostUrl = (slug: string) => {
   const postPath = `/posts/${slug}`;
-  return locale === defaultLocale 
-    ? postPath 
+  return locale === defaultLocale
+    ? postPath
     : stripTrailingSlash(getRelativeLocaleUrl(locale, postPath.replace(/^\//, "")));
 };
 

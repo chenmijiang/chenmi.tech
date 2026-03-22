@@ -1,13 +1,14 @@
 ---
-import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import { getRelativeLocaleUrl } from "astro:i18n";
+import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
+import { SITE } from "@/config";
 import { defaultLocale, type Locale } from "@/i18n/ui";
 import { stripTrailingSlash, t } from "@/i18n/utils";
-import { SITE } from "@/config";
 import LinkButton from "./LinkButton.astro";
 
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
-const backHref = locale === defaultLocale ? "/" : stripTrailingSlash(getRelativeLocaleUrl(locale, ""));
+const backHref =
+  locale === defaultLocale ? "/" : stripTrailingSlash(getRelativeLocaleUrl(locale, ""));
 const goBackText = t(locale, "nav.goBack");
 ---
 
