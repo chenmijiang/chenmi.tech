@@ -5,7 +5,7 @@ Status: Draft
 
 ## Overview
 
-Add Vitest-based testing framework to enable regression testing for utility functions, React components, Astro components, and page layouts.
+Add Vitest-based testing framework to enable regression testing for utility functions and React components. Astro component and layout testing is deferred to a future phase.
 
 ## Tech Stack
 
@@ -165,10 +165,11 @@ describe("MobileMenu", () => {
 {
   "test": "vitest",
   "test:run": "vitest run",
-  "test:ui": "vitest --ui",
   "test:coverage": "vitest run --coverage"
 }
 ```
+
+Note: `test:ui` is optional but requires installing `@vitest/ui` separately.
 
 ## CI Integration
 

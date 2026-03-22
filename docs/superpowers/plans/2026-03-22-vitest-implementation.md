@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Vitest testing framework with React component testing, utility function testing, Astro component testing, and GitHub Actions CI integration.
+**Goal:** Add Vitest testing framework with utility function testing, React component testing, and GitHub Actions CI integration. (Astro component testing deferred to Phase 2)
 
 **Architecture:** Use `getViteConfig()` to inherit Astro's existing Vite configuration. Layer tests: jsdom for React components via `environmentMatchGlobs`, node for utilities and Astro components. Test files live in `__tests__/` root directory (outside `src/`).
 
@@ -242,10 +242,11 @@ jobs:
     # ... existing build steps
 ```
 
-- [ ] **Step 2: Verify workflow syntax**
+- [ ] **Step 2: Verify locally that CI changes work**
 
 ```bash
-npm run build:check  # This validates the overall config
+npm run test:run
+npm run build
 ```
 
 - [ ] **Step 3: Commit**
