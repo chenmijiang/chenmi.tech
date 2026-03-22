@@ -4,7 +4,7 @@
 
 **Goal:** Add Vitest testing framework with utility function testing, React component testing, and GitHub Actions CI integration. (Astro component testing deferred to Phase 2)
 
-**Architecture:** Use `getViteConfig()` to inherit Astro's existing Vite configuration. Layer tests: jsdom for React components via `environmentMatchGlobs`, node for utilities and Astro components. Test files live in `__tests__/` root directory (outside `src/`).
+**Architecture:** Use `getViteConfig()` to inherit Astro's existing Vite configuration. Layer tests: jsdom for React components via `environmentMatchGlobs`, node for utility function tests. Test files live in `__tests__/` root directory (outside `src/`).
 
 **Tech Stack:** vitest, jsdom, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event, @vitest/coverage-v8
 

@@ -29,9 +29,7 @@ chenmi.tech/
 │   ├── components/
 │   │   └── ui/
 │   │       └── mobile-menu.test.tsx  # Tests for src/components/ui/mobile-menu.tsx
-│   └── layouts/
-│       └── Layout.test.ts        # Tests for src/layouts/Layout.astro
-├── __tests__/setup.ts           # Test setup file (jest-dom matchers, etc.)
+│   └── setup.ts                  # Test setup file (jest-dom matchers)
 ├── vitest.config.ts
 └── src/                          # Source code (no test files)
 ```
