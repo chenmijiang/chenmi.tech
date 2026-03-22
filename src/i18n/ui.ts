@@ -157,7 +157,7 @@ export const ui = {
       allPosts: "所有文章",
       rssFeed: "RSS 订阅",
       goHome: "返回首页",
-      greeting: "你好，我是 chenmi。",
+      greeting: "你好，我是晨米。",
       bio: "全栈开发者，使用 React、TypeScript、Node.js 构建可扩展的 Web 应用，同时关注 Rust、Docker 和 AI。",
     },
     posts: {

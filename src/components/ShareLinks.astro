@@ -1,12 +1,7 @@
 ---
-import IconBlueSky from "@/assets/icons/IconBlueSky.svg";
 import IconBrandX from "@/assets/icons/IconBrandX.svg";
-import IconFacebook from "@/assets/icons/IconFacebook.svg";
-import IconLinkedin from "@/assets/icons/IconLinkedin.svg";
 import IconMail from "@/assets/icons/IconMail.svg";
-import IconPinterest from "@/assets/icons/IconPinterest.svg";
-import IconTelegram from "@/assets/icons/IconTelegram.svg";
-import IconWhatsapp from "@/assets/icons/IconWhatsapp.svg";
+import IconQQ from "@/assets/icons/IconQQ.svg";
 import { SHARE_LINKS } from "@/constants";
 import { defaultLocale, type Locale } from "@/i18n/ui";
 import { t } from "@/i18n/utils";
@@ -16,13 +11,8 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const URL = Astro.url;
 
 const iconMap = {
-  whatsapp: IconWhatsapp,
-  facebook: IconFacebook,
   twitter: IconBrandX,
-  bluesky: IconBlueSky,
-  linkedin: IconLinkedin,
-  telegram: IconTelegram,
-  pinterest: IconPinterest,
+  qq: IconQQ,
   mail: IconMail,
 };
 ---
