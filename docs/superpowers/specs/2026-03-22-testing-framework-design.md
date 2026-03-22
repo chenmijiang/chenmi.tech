@@ -48,17 +48,14 @@ export default getViteConfig({
     exclude: ["src/**"],
     globals: true,
     setupFiles: ["__tests__/setup.ts"],
-    environmentMatchGlobs: [
-      ["__tests__/components/**/*.{ts,tsx}", "jsdom"],
-    ],
   },
 });
 ```
 
 **Environment strategy:**
 
-- `jsdom` — React component tests (`__tests__/components/**`)
-- `node` (default) — Utility function tests, Astro component tests
+- `jsdom` — React component tests opt in per file via `// @vitest-environment jsdom`
+- `node` (default) — Utility function tests and all other tests
 
 **Key design decisions:**
 
@@ -66,7 +63,9 @@ export default getViteConfig({
 
 2. **`setupFiles`** — Points to `__tests__/setup.ts` which registers `@testing-library/jest-dom` matchers globally.
 
-3. **`exclude: ["src/**"]`** — Explicitly excludes `src/` from test discovery. Tests live in `__tests__/`, not alongside source files.
+3. **Per-file environment comments** — `environmentMatchGlobs` was not reliable with Astro's `getViteConfig()` in this project, so React tests use `// @vitest-environment jsdom` at the top of each test file.
+
+4. **`exclude: ["src/**"]`** — Explicitly excludes `src/` from test discovery. Tests live in `__tests__/`, not alongside source files.
 
 ### __tests__/setup.ts
 
@@ -131,6 +130,7 @@ describe("getPath", () => {
 
 ```typescript
 // __tests__/components/ui/mobile-menu.test.tsx
+// @vitest-environment jsdom
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
