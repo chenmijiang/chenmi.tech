@@ -22,7 +22,7 @@ export const ui = {
       pageSuffix: "",
     },
     footer: {
-      viewSource: "Deployed with Alibaba Cloud",
+      viewSource: "Powered by Astro",
     },
     datetime: {
       published: "Published:",
@@ -118,7 +118,7 @@ export const ui = {
       pageSuffix: "页",
     },
     footer: {
-      viewSource: "部署在阿里云上",
+      viewSource: "Astro 驱动",
     },
     datetime: {
       published: "发布于：",
