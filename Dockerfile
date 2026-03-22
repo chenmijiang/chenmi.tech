@@ -9,7 +9,11 @@ FROM deps AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ARG IPC=""
+ARG ICPLINK=""
 ENV NODE_ENV=production
+ENV IPC=$IPC
+ENV ICPLINK=$ICPLINK
 RUN npm run build
 
 FROM nginx:alpine AS runner

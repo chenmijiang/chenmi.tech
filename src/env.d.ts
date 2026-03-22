@@ -8,4 +8,9 @@ declare global {
       };
     };
   }
+
+  interface ImportMetaEnv {
+    readonly IPC?: string;
+    readonly ICPLINK?: string;
+  }
 }

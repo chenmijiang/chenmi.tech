@@ -2,6 +2,7 @@
 import type { Locale } from "@/i18n/ui";
 import { defaultLocale } from "@/i18n/ui";
 import { t } from "@/i18n/utils";
+import { getIcpRecord } from "@/utils/icpRecord";
 import Hr from "./Hr.astro";
 import Socials from "./Socials.astro";
 
@@ -11,6 +12,7 @@ export interface Props {
 
 const { noMarginTop = false } = Astro.props;
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const icpRecord = getIcpRecord(import.meta.env);
 ---
 
 <footer class:list={["w-full", { "mt-auto": !noMarginTop }]}>
@@ -25,4 +27,16 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       </a>
     </div>
   </div>
+  {icpRecord && (
+    <div class="text-end text-sm text-gray-500 pb-4">
+      <a
+        href={import.meta.env.ICPLINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-gray-700"
+      >
+        {import.meta.env.IPC}
+      </a>
+    </div>
+  )}
 </footer>
