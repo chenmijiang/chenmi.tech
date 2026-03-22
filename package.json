@@ -57,14 +57,20 @@
     "@biomejs/biome": "^2.3.10",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/lodash.kebabcase": "^4.1.9",
+    "@vitest/coverage-v8": "^4.1.0",
     "autoprefixer": "^10.4.23",
     "commitizen": "^4.3.1",
     "cosmiconfig": "^9.0.0",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^9.1.7",
+    "jsdom": "^29.0.1",
     "lint-staged": "^16.2.7",
-    "postcss": "^8.5.6"
+    "postcss": "^8.5.6",
+    "vitest": "^4.1.0"
   },
   "config": {
     "commitizen": {
