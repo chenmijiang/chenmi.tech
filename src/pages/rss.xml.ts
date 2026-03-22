@@ -16,7 +16,10 @@ export async function GET() {
     description: SITE.desc,
     site: SITE.website,
     trailingSlash: false,
-    customData: `<atom:link href="${SITE.website}zh/rss.xml" rel="alternate" type="application/rss+xml" hreflang="zh" />`,
+    xmlns: {
+      atom: "http://www.w3.org/2005/Atom",
+    },
+    customData: `<atom:link href="${SITE.website}rss.xml" rel="self" type="application/rss+xml" /><atom:link href="${SITE.website}zh/rss.xml" rel="alternate" type="application/rss+xml" hreflang="zh" />`,
     items: sortedPosts.map(({ data, id, filePath }) => {
       const postPath = getPath(id, filePath);
       const localePath = stripTrailingSlash(
