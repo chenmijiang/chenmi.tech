@@ -12,10 +12,9 @@ Add Vitest-based testing framework to enable regression testing for utility func
 | Package | Purpose |
 |---------|---------|
 | `vitest` | Test runner and assertion library |
-| `@astrojs/test` | Astro component testing |
+| `jsdom` | DOM environment for React component tests |
 | `@testing-library/react` | React component DOM testing |
 | `@testing-library/jest-dom` | Extended DOM assertions |
-| `jsdom` | DOM environment for React component tests |
 | `@vitejs/plugin-react` | React JSX transform for Vitest |
 | `@vitest/coverage-v8` | Code coverage reporting |
 
@@ -23,16 +22,15 @@ Add Vitest-based testing framework to enable regression testing for utility func
 
 ```
 chenmi.tech/
-├── __tests__/                    # Test root directory
-│   ├── utils/                    # Mirror of src/utils/
-│   │   └── formatDate.test.ts
-│   ├── components/               # Mirror of src/components/
+├── __tests__/                    # Test root directory (outside src/)
+│   ├── utils/
+│   │   └── getPath.test.ts      # Tests for src/utils/getPath.ts
+│   ├── components/
 │   │   └── ui/
-│   │       └── Button.test.tsx
-│   ├── layouts/                  # Mirror of src/layouts/
-│   │   └── BaseLayout.test.ts
-│   └── pages/                    # Mirror of src/pages/
-│       └── index.test.ts
+│   │       └── mobile-menu.test.tsx  # Tests for src/components/ui/mobile-menu.tsx
+│   └── layouts/
+│       └── Layout.test.ts        # Tests for src/layouts/Layout.astro
+├── __tests__/setup.ts           # Test setup file (jest-dom matchers, etc.)
 ├── vitest.config.ts
 └── src/                          # Source code (no test files)
 ```
@@ -42,103 +40,134 @@ chenmi.tech/
 ### vitest.config.ts
 
 ```typescript
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
+/// <reference types="vitest/config" />
+import { getViteConfig } from "astro/config";
 
-export default defineConfig({
+export default getViteConfig({
   test: {
-    include: ['__tests__/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['src/**'],
-    environment: 'jsdom',
+    include: ["__tests__/**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["src/**"],
     globals: true,
-  },
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
+    setupFiles: ["__tests__/setup.ts"],
   },
 });
 ```
 
-### Environment
+**Key design decisions:**
 
-- Node.js 20+ (matches CI configuration)
-- ESM modules (`"type": "module"` in package.json)
+1. **`getViteConfig()` from `astro/config`** — Reuses existing Astro configuration (alias `@/` → `src/`, Tailwind, etc.) instead of duplicating config manually. This ensures test environment matches production build.
 
-## Test Types
+2. **`setupFiles`** — Points to `__tests__/setup.ts` which registers `@testing-library/jest-dom` matchers globally.
 
-### 1. Utility Functions
+3. **`exclude: ["src/**"]`** — Explicitly excludes `src/` from test discovery. Tests live in `__tests__/`, not alongside source files.
 
-Location: `__tests__/utils/*.test.ts`
+### __tests__/setup.ts
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { formatDate } from '@/utils/formatDate';
+import "@testing-library/jest-dom/vitest";
+```
 
-describe('formatDate', () => {
-  it('formats date correctly', () => {
-    expect(formatDate('2026-03-22')).toBe('March 22, 2026');
+This registers custom jest-dom matchers (e.g., `toBeInTheDocument()`, `toHaveTextContent()`) globally.
+
+## Required Dependencies
+
+```bash
+npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @vitejs/plugin-react @vitest/coverage-v8
+```
+
+## Test Layering
+
+Tests are organized by type with appropriate environments:
+
+| Layer | Location | Environment | Tool |
+|-------|----------|--------------|------|
+| Utility functions | `__tests__/utils/*.test.ts` | node | Vitest assertions |
+| React components | `__tests__/components/ui/*.test.tsx` | jsdom | @testing-library/react |
+| Astro components | `__tests__/layouts/*.test.ts` | node + Container API | Vitest + astro/container |
+
+## Example Tests
+
+### 1. Utility Function
+
+**Target:** `src/utils/getPath.ts`
+
+```typescript
+// __tests__/utils/getPath.test.ts
+import { describe, it, expect } from "vitest";
+import { getPath } from "@/utils/getPath";
+
+describe("getPath", () => {
+  it("returns base path when no filePath", () => {
+    const result = getPath("my-post", undefined);
+    expect(result).toBe("/posts/my-post");
+  });
+
+  it("returns path with segments from filePath", () => {
+    const result = getPath("my-post", "src/content/blog/tech/my-post.md");
+    expect(result).toBe("/posts/tech/my-post");
+  });
+
+  it("excludes underscore-prefixed directories", () => {
+    const result = getPath("my-post", "src/content/blog/_drafts/my-post.md");
+    expect(result).toBe("/posts/my-post");
   });
 });
 ```
 
-### 2. React Components
+### 2. React Component
 
-Location: `__tests__/components/ui/*.test.tsx`
+**Target:** `src/components/ui/mobile-menu.tsx`
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Button } from '@/components/ui/Button';
+// __tests__/components/ui/mobile-menu.test.tsx
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import MobileMenu from "@/components/ui/mobile-menu";
 
-describe('Button', () => {
-  it('renders children', () => {
-    render(<Button>Click me</Button>);
-    expect(screen.getByText('Click me')).toBeDefined();
+describe("MobileMenu", () => {
+  it("renders toggle button", () => {
+    render(<MobileMenu />);
+    expect(screen.getByRole("button", { name: /toggle menu/i })).toBeInTheDocument();
+  });
+
+  it("shows menu when opened", async () => {
+    const { user } = await render(<MobileMenu />);
+    await user.click(screen.getByRole("button"));
+    expect(screen.getByRole("navigation")).toBeInTheDocument();
   });
 });
 ```
 
-### 3. Astro Components
+### 3. Astro Component
 
-Location: `__tests__/layouts/*.test.ts`
+**Target:** `src/layouts/Layout.astro`
+
+Uses `experimental_AstroContainer` from `astro/container` (Astro's official testing API):
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { setup } from '@astrojs/test';
-import { BaseLayout } from '@/layouts/BaseLayout.astro';
+// __tests__/layouts/Layout.test.ts
+import { describe, it, expect } from "vitest";
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import Layout from "@/layouts/Layout.astro";
 
-describe('BaseLayout', () => {
-  it('renders layout', async () => {
-    const { element } = await setup({ component: BaseLayout });
-    expect(element.innerHTML).toContain('<html');
+describe("Layout", () => {
+  it("renders html lang attribute", async () => {
+    const container = await AstroContainer.create();
+    const result = await container.renderToString(Layout);
+    expect(result).toContain('<html lang="en"');
+  });
+
+  it("renders slot content", async () => {
+    const container = await AstroContainer.create();
+    const result = await container.renderToString(Layout, {
+      slots: { default: "<main>Test content</main>" },
+    });
+    expect(result).toContain("Test content");
   });
 });
 ```
 
-### 4. Page Layouts
-
-Location: `__tests__/pages/*.test.ts`
-
-```typescript
-import { describe, it, expect } from 'vitest';
-import { createPage } from '@astrojs/test';
-import Index from '@/pages/index.astro';
-
-describe('Index page', () => {
-  it('renders without errors', async () => {
-    const page = await createPage({ component: Index });
-    expect(page.html()).toContain('<main');
-  });
-});
-```
-
-> **Note:** Astro component and page test APIs may vary. Verify exact API usage against `@astrojs/test` documentation after installation.
+**Note:** The Container API is experimental (`astro@4.9.0+`). Verify API compatibility when upgrading Astro.
 
 ## npm Scripts
 
@@ -151,45 +180,59 @@ describe('Index page', () => {
 }
 ```
 
-## Required Dependencies
+## CI Integration
 
-```bash
-npm install -D vitest @astrojs/test @testing-library/react @testing-library/jest-dom jsdom @vitejs/plugin-react @vitest/coverage-v8
+Tests run in GitHub Actions on every push and PR:
+
+```yaml
+# .github/workflows/test.yml
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:run
 ```
 
 ## Build Exclusion
 
 Test files are excluded from production build by:
-- Vitest `include` pattern: `__tests__/**`
-- Vitest `exclude` pattern: `src/**`
-- `.gitignore` already ignores `dist/` and `node_modules/`
 
-## CI Integration (Deferred)
-
-No immediate CI integration. Future step will add test job to `.github/workflows/`:
-
-```yaml
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run test:run
-```
-
-Trigger: `on: [push, pull_request]` (same as existing build/lint workflows).
+1. **Location** — Tests are in `__tests__/` (root), not `src/`. Astro's build only processes `src/` by default.
+2. **Vitest config** — `include: ["__tests__/**"]` and `exclude: ["src/**"]` ensure tests are only discovered from the correct location.
+3. **No import from tests** — Source files never import from test files.
 
 ## Success Criteria
 
 1. `npm run test` runs all tests without errors
-2. Test files in `__tests__/` are not included in production build
-3. TypeScript types are correctly resolved via `@/` alias
-4. Existing `npm run build` continues to work
+2. `npm run test:run` passes in CI (GitHub Actions)
+3. Test files in `__tests__/` are not included in production build
+4. TypeScript types are correctly resolved via `@/` alias
+5. Existing `npm run build` continues to work
 
 ## Out of Scope
 
@@ -197,3 +240,4 @@ Trigger: `on: [push, pull_request]` (same as existing build/lint workflows).
 - Snapshot testing
 - Performance benchmarking
 - TDD workflow setup
+- `@astrojs/test` package (not needed — using astro/container directly)
