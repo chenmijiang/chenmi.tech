@@ -6,7 +6,7 @@ This document contains important instructions and notes for Claude when working 
 
 ### NEVER CREATE BLOG POSTS WITHOUT CONSENT
 
-- **NEVER CREATE BLOG POSTS WITHOUT EXPLICIT CONSENT** from steipete
+- **NEVER CREATE BLOG POSTS WITHOUT EXPLICIT CONSENT** from chenmi
 - Do not write or propose new blog content unless specifically requested
 - Only help with editing or fixing existing posts when asked
 
@@ -67,27 +67,22 @@ npm run preview
 ### Common Tasks
 
 1. **Adding a new blog post**:
-
    - Create a new markdown file in `/src/content/blog/`
    - Include proper frontmatter (title, description, pubDate, etc.)
    - Format dates in ISO-8601 format: `YYYY-MM-DDTHH:MM:SS+HH:MM`
    - Format tags as arrays: `tags: ["tag1", "tag2"]`
 
 2. **Modifying site configuration**:
-
    - Edit `/src/consts.ts` for global site constants
 
 3. **Styling changes**:
-
    - Edit files in `/src/styles/` for global styling
    - Use Tailwind classes in component templates for component-specific styling
 
 4. **Layout changes**:
-
    - Modify the appropriate layout files in `/src/layouts/`
 
 5. **Fixing broken images**:
-
    - Blog posts reference images in the `/public/assets/img/` directory structure
    - The original files can be found in `/temp-repos/steipete.com/assets/img/`
    - Images must be copied to the matching public directory structure
