@@ -22,19 +22,19 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
+  --background: #f6e4c8;
+  --foreground: #202f39;
+  --accent: #3e62ad;
+  --muted: #cab49f;
+  --border: #3e62ad;
 }
 
 html[data-theme="dark"] {
-  --background: #040710;
-  --foreground: #c6ccd8;
-  --accent: #66ccff;
-  --muted: #343f60bf;
-  --border: #4b86a4;
+  --background: #202f39;
+  --foreground: #f6e4c8;
+  --accent: #ff8a00;
+  --muted: #2b5a6c;
+  --border: #ff8a00;
 }
 
 @theme {
