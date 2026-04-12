@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import mermaid from "astro-mermaid";
 import mdx from "@astrojs/mdx";
 import sitemap, { ChangeFreqEnum } from "@astrojs/sitemap";
 import react from "@astrojs/react";
@@ -65,6 +66,11 @@ export default defineConfig({
     },
   },
   integrations: [
+    mermaid({
+      theme: "dark",
+      autoTheme: false,
+      enableLog: false,
+    }),
     mdx(),
     sitemap({
       filter: (page) => {
