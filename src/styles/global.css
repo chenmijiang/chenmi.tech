@@ -1,40 +1,40 @@
-@import "tailwindcss";
-@import "./typography.css";
+@import 'tailwindcss';
+@import './typography.css';
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* Font definitions */
 @font-face {
-  font-family: "Atkinson";
-  src: url("/fonts/atkinson-regular.woff") format("woff");
+  font-family: 'Atkinson';
+  src: url('/fonts/atkinson-regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Atkinson";
-  src: url("/fonts/atkinson-bold.woff") format("woff");
+  font-family: 'Atkinson';
+  src: url('/fonts/atkinson-bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 :root,
-html[data-theme="light"] {
-  --background: #f6e4c8;
-  --foreground: #202f39;
-  --accent: #3e62ad;
-  --muted: #cab49f;
-  --border: #3e62ad;
-}
-
-html[data-theme="dark"] {
+html[data-theme='light'] {
   --background: #202f39;
   --foreground: #f6e4c8;
   --accent: #ff8a00;
   --muted: #2b5a6c;
   --border: #ff8a00;
+}
+
+html[data-theme='dark'] {
+  --background: #060607;
+  --foreground: #cbcbcb;
+  --accent: #f1bc53;
+  --muted: #22262f;
+  --border: #7a3917;
 }
 
 @theme {
@@ -52,42 +52,50 @@ html[data-theme="dark"] {
     scrollbar-width: auto;
     scrollbar-color: var(--color-muted) transparent;
   }
-  
+
   /* View Transitions API for smooth theme switching (Safari 18+, Chrome 111+) */
   :root {
     view-transition-name: root;
   }
-  
+
   /* Apply to html element as well for better compatibility */
   html {
     view-transition-name: root;
   }
-  
+
   /* Ensure smooth transition between light and dark themes */
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation-duration: 0.25s;
   }
-  
+
   /* Customize the transition style */
   ::view-transition-old(root) {
     animation: fade-out 0.25s ease-out;
   }
-  
+
   ::view-transition-new(root) {
     animation: fade-in 0.25s ease-out;
   }
-  
+
   @keyframes fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
-  
+
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  
+
   html {
     @apply overflow-y-scroll scroll-smooth;
   }
@@ -99,7 +107,7 @@ html[data-theme="dark"] {
     @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
   }
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
   section,
