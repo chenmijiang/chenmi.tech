@@ -1,118 +1,39 @@
-# Instructions for Claude
+# Project instructions for Claude Code
 
-This document contains important instructions and notes for Claude when working on this project.
+## Before editing
 
-## CRITICAL GUIDELINES
+1. Read the applicable local rules, the target files, and relevant configuration.
+2. Inspect the current diff and preserve unrelated working-tree changes.
+3. For issue, ticket, domain, ADR, or triage work, read the matching guide under `docs/agents/` before acting.
 
-### NEVER CREATE BLOG POSTS WITHOUT CONSENT
+## Hard constraints
 
-- **NEVER CREATE BLOG POSTS WITHOUT EXPLICIT CONSENT** from chenmi
-- Do not write or propose new blog content unless specifically requested
-- Only help with editing or fixing existing posts when asked
+- **Blog consent:** Create a new post only after chenmi explicitly requests it. Otherwise, limit blog work to editing or repairing existing posts; do not draft or propose new post content.
+- **Shell:** Use `gsed` for sed-like operations and `rg` for searches. Use the repository's existing formatter and code-mod tools.
+- **Server:** In agent mode, use finite verification commands. Prefer `npm run build` or `npm run build:check`; use `npm run preview` only when explicitly requested.
+- **Dependencies:** Check versions with `npm outdated` or `npm view <package> version`. Prefer the latest compatible stable release, never downgrade to conceal a failure, and do not update unrelated packages.
 
-### USE GSED INSTEAD OF SED
+## Change and verification loop
 
-- **ALWAYS USE `gsed` INSTEAD OF `sed`** - For better compatibility across platforms
-- `gsed` provides GNU sed features that are more consistent across Linux and macOS
-- If editing files with sed-like operations, use `gsed` to ensure reliable results
+1. Make the smallest change that satisfies the request and match surrounding conventions.
+2. When behavior changes, add or update behavior-focused tests in the root `__tests__/` directory.
+3. Verify by risk: focused tests for local logic; `npm run test:run` for testable behavior; `npm run build:check` for Astro, TypeScript, template, or dependency changes; `npm run check` for Biome-covered source changes.
+4. If a check is unavailable or fails, investigate when in scope and report the exact limitation or failure.
+5. Review the final diff for scope, stale comments, and accidental content changes; finish only after `git diff --check` passes.
 
-### ALWAYS USE LATEST DEPENDENCIES
+## Test-specific rules
 
-- **NEVER DOWNGRADE DEPENDENCIES** - Always use the latest stable versions
-- **ALWAYS USE TOOLING TO CHECK VERSIONS** - Never guess or assume versions
-- Run `npm outdated` to see what packages need updating
-- Run `npm view [package] version` to check the latest published version
-- When fixing dependency issues, always upgrade to the latest compatible versions
-- Prioritize staying current with the ecosystem, even if it requires more work to adapt
+- Tests belong in `__tests__/`, not beside source files.
+- React component tests start with `// @vitest-environment jsdom`.
+- Use `npm run test:run` for finite runs; reserve `npm run test` for interactive development.
 
-### IMPORTANT: Development Server Limitation
+## Conditional project rules
 
-- **DO NOT run `npm run dev`** in agent mode - this will create an endless loop and stop the agent from working properly
-- Instead, use `npm run build` to verify your changes
+- **New or edited blog content:** Read the existing post and its schema/frontmatter before changing it. Authorized new posts use ISO-8601 `pubDate` values (`YYYY-MM-DDTHH:MM:SS+HH:MM`) and array-form tags such as `tags: ["tag1", "tag2"]`.
+- **Broken blog images:** Blog URLs use `/assets/img/YEAR/POST-NAME/IMAGE.jpg`; locate source files with `find`, place them under `public/assets/img/`, and verify the reference with a build.
 
-## Development Process
+## Agent skills
 
-### Testing Changes
-
-To properly test changes, use these commands:
-
-```bash
-# Run tests (watch mode for development)
-npm run test
-
-# Run tests once (used by CI)
-npm run test:run
-
-# Build the project (this is preferred over npm run dev in agent mode)
-npm run build
-
-# If you need to preview the build (only do when specifically requested)
-npm run preview
-```
-
-**Testing framework:** Vitest with @testing-library/react and @testing-library/jest-dom
-
-**Test file location:** `__tests__/` root directory (not alongside source)
-
-**React component tests:** Use `// @vitest-environment jsdom` directive at top of test file
-
-### Project Structure
-
-- `/src/content/blog/` - Contains all blog posts in markdown format
-- `/src/pages/` - Contains page templates and routing
-- `/src/components/` - Reusable UI components
-- `/src/layouts/` - Page layouts and templates
-- `/src/styles/` - CSS styles including Tailwind customizations
-
-### Common Tasks
-
-1. **Adding a new blog post**:
-   - Create a new markdown file in `/src/content/blog/`
-   - Include proper frontmatter (title, description, pubDate, etc.)
-   - Format dates in ISO-8601 format: `YYYY-MM-DDTHH:MM:SS+HH:MM`
-   - Format tags as arrays: `tags: ["tag1", "tag2"]`
-
-2. **Modifying site configuration**:
-   - Edit `/src/consts.ts` for global site constants
-
-3. **Styling changes**:
-   - Edit files in `/src/styles/` for global styling
-   - Use Tailwind classes in component templates for component-specific styling
-
-4. **Layout changes**:
-   - Modify the appropriate layout files in `/src/layouts/`
-
-5. **Fixing broken images**:
-   - Blog posts reference images in the `/public/assets/img/` directory structure
-   - Images must be copied to the matching public directory structure
-   - Fixed images should be committed to the repository
-   - Use `find` command to locate the original images
-   - Common image paths follow the pattern: `/assets/img/YEAR/POST-NAME/IMAGE.jpg`
-
-6. **Dependency Updates**:
-   - Always use proper tooling to check for latest versions:
-
-     ```bash
-     # Check all outdated dependencies
-     npm outdated
-
-     # Check latest version of a specific package
-     npm view astro version
-     npm view react version
-
-     # Update all dependencies to latest
-     npm update --latest
-     ```
-
-   - Test thoroughly after updating dependencies
-   - If a build fails after updates, diagnose the specific issue and FIX it properly
-   - NEVER resort to downgrading as a solution
-
-## Tech Stack
-
-- **Astro** (latest version) - Main framework
-- **TailwindCSS** - For styling
-- **React** - For interactive components (v19.2.3)
-- **MDX** - For enhanced markdown support
-- **Vitest** - Unit and component testing
-- **@testing-library/react** - React component DOM testing
+- **Issue tracker, issue/spec publishing, or ticket lookup:** Use GitHub Issues via `gh`; read `docs/agents/issue-tracker.md` first.
+- **Triage:** Use the five default labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`); read `docs/agents/triage-labels.md` first.
+- **Domain exploration, glossary terms, or architectural decisions:** Use the single-context `CONTEXT.md` / `docs/adr/` layout; read `docs/agents/domain.md` first.
