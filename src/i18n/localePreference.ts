@@ -1,4 +1,5 @@
-import { defaultLocale, type Locale, ui } from "./ui";
+import { getRootLocaleRedirect as getLocaleRoutingRedirect } from "./routing";
+import { type Locale, ui } from "./ui";
 
 export const LOCALE_PREFERENCE_KEY = "locale-preference";
 
@@ -22,22 +23,4 @@ export function saveLocalePreference(storage: WritableStorageLike, locale: Local
   storage.setItem(LOCALE_PREFERENCE_KEY, locale);
 }
 
-export function getRootLocaleRedirect({
-  pathname,
-  navigatorLanguage,
-  storedLocale,
-}: {
-  pathname: string;
-  navigatorLanguage?: string;
-  storedLocale?: string | null;
-}): string | null {
-  if (pathname !== "/" && pathname !== "") {
-    return null;
-  }
-
-  if (isLocale(storedLocale)) {
-    return storedLocale === defaultLocale ? null : `/${storedLocale}`;
-  }
-
-  return navigatorLanguage?.toLowerCase().startsWith("zh") ? "/zh" : null;
-}
+export const getRootLocaleRedirect = getLocaleRoutingRedirect;

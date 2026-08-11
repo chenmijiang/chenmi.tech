@@ -1,8 +1,11 @@
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
+import { localePath } from "@/i18n/routing";
+import { defaultLocale } from "@/i18n/ui";
 import getSortedPosts from "@/utils/getSortedPosts";
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ currentLocale }) => {
+  const locale = currentLocale || defaultLocale;
   const posts = await getCollection("blog");
   const sortedPosts = getSortedPosts(posts);
 
@@ -27,10 +30,10 @@ export const GET: APIRoute = async () => {
 
   for (const year of years) {
     const count = postsByYear[Number(year)].length;
-    markdownContent += `- [${year}](/posts.md#${year}) (${count} post${count !== 1 ? "s" : ""})\n`;
+    markdownContent += `- [${year}](${localePath(locale, "posts.md")}#${year}) (${count} post${count !== 1 ? "s" : ""})\n`;
   }
 
-  markdownContent += `\n---\n\n[Back to Home](/index.md) | [All Posts](/posts.md)`;
+  markdownContent += `\n---\n\n[Back to Home](${localePath(locale, "index.md")}) | [All Posts](${localePath(locale, "posts.md")})`;
 
   return new Response(markdownContent, {
     status: 200,

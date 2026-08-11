@@ -9,12 +9,12 @@ import Header from "@/components/Header.astro";
 import Hr from "@/components/Hr.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Socials from "@/components/Socials.astro";
-import StructuredData from "@/components/StructuredData.astro";
 import { SITE, SOCIALS } from "@/config";
 import { defaultLocale, type Locale } from "@/i18n/ui";
 import { stripTrailingSlash, t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
+import { getPerson, getWebSite } from "@/utils/pageMetadata";
 
 const locale = (Astro.currentLocale || defaultLocale) as Locale;
 
@@ -24,11 +24,24 @@ const sortedPosts = getSortedPosts(posts);
 const posts2025AndLater = sortedPosts.filter(({ data }) => data.pubDatetime.getFullYear() >= 2025);
 const featuredPosts = posts2025AndLater.filter(({ data }) => data.featured);
 const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
+const websiteData = getWebSite({
+  title: SITE.title,
+  website: SITE.website,
+  description: SITE.desc,
+  author: SITE.author,
+});
+const personData = getPerson({
+  author: SITE.author,
+  website: SITE.website,
+  description: SITE.desc,
+  image: new URL(`/${SITE.ogImage}`, SITE.website).href,
+  socialLinks: SOCIALS.filter(({ active, href }) => active && href).map(({ href }) => href),
+});
 ---
 
 <Layout description={SITE.desc}>
-  <StructuredData type="WebSite" data={{}} />
-  <StructuredData type="Person" data={{}} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteData)} />
+  <script type="application/ld+json" set:html={JSON.stringify(personData)} />
   <Header />
   <main id="main-content" data-layout="index">
     <section id="hero" class="pt-6 pb-4">

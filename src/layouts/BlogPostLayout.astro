@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { SITE } from "@/config";
+import { getLocale } from "@/i18n/routing";
+import { getPageMetadata } from "@/utils/pageMetadata";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
@@ -14,17 +16,20 @@ type Props = CollectionEntry<"blog">["data"] & {
 
 const { title, description, pubDatetime, modDatetime, heroImage, slug, readingTime } = Astro.props;
 
-// Enforce canonical URL to always be /posts/ path without trailing slash
-// This matches Vercel's trailingSlash: false configuration
-const canonicalPath = `/posts/${slug}`;
-const canonicalURL = new URL(canonicalPath, Astro.site).toString();
+const metadata = getPageMetadata({
+  url: Astro.url,
+  locale: getLocale(Astro.currentLocale),
+  canonicalURL: new URL(`/posts/${slug}`, Astro.site || Astro.url).href,
+  siteOgImage: SITE.ogImage ? `/${SITE.ogImage}` : undefined,
+});
 ---
 
 <Layout
   title={title}
   description={description}
-	  canonicalURL={canonicalURL}
-	  scrollSmooth={true}
+  canonicalURL={metadata.canonical}
+  ogImage={metadata.image}
+  scrollSmooth={true}
 >
   <Header />
 

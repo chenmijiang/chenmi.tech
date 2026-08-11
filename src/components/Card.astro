@@ -1,9 +1,9 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { defaultLocale, type Locale } from "@/i18n/ui";
-import { stripTrailingSlash, t } from "@/i18n/utils";
+import { getLocale, localePath } from "@/i18n/routing";
+import type { Locale } from "@/i18n/ui";
+import { t } from "@/i18n/utils";
 import { getPath } from "@/utils/getPath";
 import { calculateReadingTime } from "@/utils/readingTime";
 import { slugifyStr } from "@/utils/slugify";
@@ -19,14 +19,11 @@ const { variant = "h2", data, id, filePath, body, showImage = true } = Astro.pro
 const { title, description, pubDatetime, modDatetime, timezone, heroImage } = data;
 const readingTime = calculateReadingTime(body ?? "");
 
-const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const locale = getLocale(Astro.currentLocale);
 const readingTimeText = t(locale, "card.readingTime");
 
 const postPath = getPath(id, filePath);
-const localePostPath =
-  locale === defaultLocale
-    ? postPath
-    : stripTrailingSlash(getRelativeLocaleUrl(locale, postPath.replace(/^\//, "")));
+const localePostPath = localePath(locale, postPath);
 
 const headerProps = {
   style: { viewTransitionName: slugifyStr(title) },
