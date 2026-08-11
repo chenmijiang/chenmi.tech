@@ -1,11 +1,10 @@
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
-import { localePath } from "@/i18n/routing";
-import { defaultLocale } from "@/i18n/ui";
+import { getLocale, localePath } from "@/i18n/routing";
 import getSortedPosts from "@/utils/getSortedPosts";
 
 export const GET: APIRoute = async ({ currentLocale }) => {
-  const locale = currentLocale || defaultLocale;
+  const locale = getLocale(currentLocale);
   const posts = await getCollection("blog");
   const sortedPosts = getSortedPosts(posts);
 

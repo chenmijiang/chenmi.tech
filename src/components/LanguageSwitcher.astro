@@ -1,12 +1,12 @@
 ---
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
 import { LOCALE_PREFERENCE_KEY } from "@/i18n/localePreference";
-import { alternateLocalePath, getLocale } from "@/i18n/routing";
+import { getLocale, localePathFromPathname } from "@/i18n/routing";
 import type { Locale } from "@/i18n/ui";
 
 const currentLocale = getLocale(Astro.currentLocale);
 const alternateLocale: Locale = currentLocale === "en" ? "zh" : "en";
-const alternatePath = alternateLocalePath(alternateLocale, Astro.url.pathname);
+const alternatePath = localePathFromPathname(alternateLocale, Astro.url.pathname);
 const alternateLabel = alternateLocale === "en" ? "English" : "中文";
 ---
 

@@ -13,7 +13,6 @@ import { getLocale, localePath } from "@/i18n/routing";
 import { t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
-import { getPerson, getWebSite } from "@/utils/pageMetadata";
 
 const locale = getLocale(Astro.currentLocale);
 
@@ -23,19 +22,29 @@ const sortedPosts = getSortedPosts(posts);
 const posts2025AndLater = sortedPosts.filter(({ data }) => data.pubDatetime.getFullYear() >= 2025);
 const featuredPosts = posts2025AndLater.filter(({ data }) => data.featured);
 const recentPosts = posts2025AndLater.filter(({ data }) => !data.featured);
-const websiteData = getWebSite({
-  title: SITE.title,
-  website: SITE.website,
+const websiteData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE.title,
+  url: SITE.website,
   description: SITE.desc,
-  author: SITE.author,
-});
-const personData = getPerson({
-  author: SITE.author,
-  website: SITE.website,
-  description: SITE.desc,
+  author: { "@type": "Person", name: SITE.author },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE.website}search?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+const personData = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: SITE.author,
+  url: SITE.website,
   image: new URL(`/${SITE.ogImage}`, SITE.website).href,
-  socialLinks: SOCIALS.filter(({ active, href }) => active && href).map(({ href }) => href),
-});
+  sameAs: SOCIALS.filter(({ active, href }) => active && href).map(({ href }) => href),
+  jobTitle: "Full-Stack Developer",
+  description: SITE.desc,
+};
 ---
 
 <Layout description={SITE.desc}>

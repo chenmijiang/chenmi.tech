@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  alternateLocalePath,
   getAlternateLocalePaths,
   getLocale,
   getRootLocaleRedirect,
@@ -31,8 +30,8 @@ describe("locale routing", () => {
 
   it("switches languages for nested paths and roots", () => {
     expect(localePathname("/zh/posts/example")).toBe("/posts/example");
-    expect(alternateLocalePath("zh", "/posts/example/")).toBe("/zh/posts/example");
-    expect(alternateLocalePath("en", "/zh")).toBe("/");
+    expect(localePathFromPathname("zh", "/posts/example/")).toBe("/zh/posts/example");
+    expect(localePathFromPathname("en", "/zh")).toBe("/");
   });
 
   it("redirects only the root to a non-default preference", () => {

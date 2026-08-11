@@ -1,9 +1,8 @@
 import type { APIRoute } from "astro";
-import { localePath } from "@/i18n/routing";
-import { defaultLocale } from "@/i18n/ui";
+import { getLocale, localePath } from "@/i18n/routing";
 
 export const GET: APIRoute = async ({ currentLocale }) => {
-  const locale = currentLocale || defaultLocale;
+  const locale = getLocale(currentLocale);
 
   const markdownContent = `# chenmi
 

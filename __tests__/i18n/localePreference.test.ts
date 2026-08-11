@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  getLocalePreference,
-  getRootLocaleRedirect,
-  saveLocalePreference,
-} from "@/i18n/localePreference";
+import { getLocalePreference, saveLocalePreference } from "@/i18n/localePreference";
+import { getRootLocaleRedirect } from "@/i18n/routing";
 
 describe("localePreference", () => {
   it("persists the manually selected locale in localStorage", () => {

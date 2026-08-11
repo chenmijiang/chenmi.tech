@@ -1,4 +1,3 @@
-import { getRootLocaleRedirect as getLocaleRoutingRedirect } from "./routing";
 import { type Locale, ui } from "./ui";
 
 export const LOCALE_PREFERENCE_KEY = "locale-preference";
@@ -22,5 +21,3 @@ export function getLocalePreference(storage: StorageLike): Locale | null {
 export function saveLocalePreference(storage: WritableStorageLike, locale: Locale): void {
   storage.setItem(LOCALE_PREFERENCE_KEY, locale);
 }
-
-export const getRootLocaleRedirect = getLocaleRoutingRedirect;

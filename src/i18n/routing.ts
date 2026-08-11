@@ -2,6 +2,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { defaultLocale, type Locale, ui } from "./ui";
 
 const locales = Object.keys(ui) as Locale[];
+const localePrefix = new RegExp(`^/(${locales.join("|")})(?=/|$)`);
 
 function stripTrailingSlash(path: string): string {
   return path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path;
@@ -15,18 +16,8 @@ export function localePath(locale: Locale, path = ""): string {
   return stripTrailingSlash(getRelativeLocaleUrl(locale, path.replace(/^\//, "")));
 }
 
-export function getLocaleFromPathname(pathname: string): Locale {
-  const locale = pathname.match(new RegExp(`^/(${locales.join("|")})(?=/|$)`))?.[1];
-  return getLocale(locale);
-}
-
 export function localePathname(pathname: string): string {
-  const path = pathname.replace(new RegExp(`^/(${locales.join("|")})(?=/|$)`), "");
-  return path || "/";
-}
-
-export function alternateLocalePath(locale: Locale, pathname: string): string {
-  return localePath(locale, localePathname(pathname));
+  return pathname.replace(localePrefix, "") || "/";
 }
 
 export function localePathFromPathname(locale: Locale, pathname: string): string {
@@ -36,12 +27,13 @@ export function localePathFromPathname(locale: Locale, pathname: string): string
 export function legacyBlogPath(pathname: string): string | null {
   const path = localePathname(pathname);
   if (!path.startsWith("/blog")) return null;
-  return localePath(getLocaleFromPathname(pathname), path.replace(/^\/blog/, "/posts"));
+  const locale = pathname.match(localePrefix)?.[1];
+  return localePath(getLocale(locale), path.replace(/^\/blog/, "/posts"));
 }
 
 export function getAlternateLocalePaths(pathname: string): Record<Locale, string> {
   return Object.fromEntries(
-    locales.map((locale) => [locale, alternateLocalePath(locale, pathname)])
+    locales.map((locale) => [locale, localePathFromPathname(locale, pathname)])
   ) as Record<Locale, string>;
 }
 

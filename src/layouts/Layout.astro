@@ -22,7 +22,6 @@ export interface Props {
 const {
   title = SITE.title,
   author = SITE.author,
-  profile = SITE.profile,
   description = SITE.desc,
   ogImage,
   canonicalURL,
@@ -31,9 +30,9 @@ const {
   scrollSmooth = false,
 } = Astro.props;
 
+const locale = getLocale(Astro.currentLocale);
 const metadata = getPageMetadata({
   url: Astro.url,
-  locale: getLocale(Astro.currentLocale),
   canonicalURL,
   ogImage,
   siteOgImage: SITE.ogImage ? `/${SITE.ogImage}` : undefined,
@@ -41,7 +40,7 @@ const metadata = getPageMetadata({
 ---
 
 <!doctype html>
-<html lang={metadata.locale} class={`${scrollSmooth && "scroll-smooth"}`}>
+<html lang={locale} class={`${scrollSmooth && "scroll-smooth"}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -117,7 +116,8 @@ const metadata = getPageMetadata({
     <ViewTransitions />
 
     <script>
-      import { getLocalePreference, getRootLocaleRedirect } from "@/i18n/localePreference";
+      import { getLocalePreference } from "@/i18n/localePreference";
+      import { getRootLocaleRedirect } from "@/i18n/routing";
 
       const redirectPath = getRootLocaleRedirect({
         pathname: window.location.pathname,

@@ -6,7 +6,6 @@ describe("page metadata", () => {
     expect(
       getPageMetadata({
         url: new URL("https://chenmi.tech/zh/posts/example/"),
-        locale: "zh",
         siteOgImage: "/site.png",
       })
     ).toMatchObject({
@@ -23,7 +22,6 @@ describe("page metadata", () => {
     expect(
       getPageMetadata({
         url: new URL("https://chenmi.tech/posts/example"),
-        locale: "en",
         canonicalURL: "https://example.com/original",
         ogImage: "https://images.example.com/post.png",
         siteOgImage: "/site.png",

@@ -12,7 +12,6 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import Tag from "@/components/Tag.astro";
 import { SITE } from "@/config";
 import { getLocale, localePath } from "@/i18n/routing";
-import { defaultLocale, type Locale } from "@/i18n/ui";
 import { t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 import { getPath } from "@/utils/getPath";
@@ -65,7 +64,6 @@ if (!ogImageUrl && SITE.dynamicOgImage) {
 
 const metadata = getPageMetadata({
   url: Astro.url,
-  locale,
   canonicalURL:
     canonicalURL || new URL(getPath(post.id, post.filePath, true), Astro.site || Astro.url).href,
   ogImage: ogImageUrl,

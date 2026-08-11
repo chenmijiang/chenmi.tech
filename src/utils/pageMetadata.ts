@@ -3,79 +3,25 @@ import type { Locale } from "@/i18n/ui";
 
 export function getPageMetadata({
   url,
-  locale,
   canonicalURL,
   ogImage,
   siteOgImage,
 }: {
   url: URL;
-  locale: Locale;
   canonicalURL?: string;
   ogImage?: string;
   siteOgImage?: string;
 }) {
   const canonical = canonicalURL || new URL(url.pathname, url).href;
   const image = new URL(ogImage || siteOgImage || "/og.png", url).href;
-  const alternatePaths = getAlternateLocalePaths(url.pathname);
   const alternates = Object.fromEntries(
-    Object.entries(alternatePaths).map(([alternateLocale, path]) => [
-      alternateLocale,
+    Object.entries(getAlternateLocalePaths(url.pathname)).map(([locale, path]) => [
+      locale,
       new URL(path, url).href,
     ])
   ) as Record<Locale, string>;
 
-  return { locale, canonical, image, alternates };
-}
-
-export function getWebSite({
-  title,
-  website,
-  description,
-  author,
-}: {
-  title: string;
-  website: string;
-  description: string;
-  author: string;
-}) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: title,
-    url: website,
-    description,
-    author: { "@type": "Person", name: author },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${website}search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  };
-}
-
-export function getPerson({
-  author,
-  website,
-  description,
-  image,
-  socialLinks,
-}: {
-  author: string;
-  website: string;
-  description: string;
-  image: string;
-  socialLinks: string[];
-}) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: author,
-    url: website,
-    image,
-    sameAs: socialLinks,
-    jobTitle: "Full-Stack Developer",
-    description,
-  };
+  return { canonical, image, alternates };
 }
 
 export function getBlogPosting({
