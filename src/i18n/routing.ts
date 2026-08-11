@@ -15,6 +15,11 @@ export function localePath(locale: Locale, path = ""): string {
   return stripTrailingSlash(getRelativeLocaleUrl(locale, path.replace(/^\//, "")));
 }
 
+export function getLocaleFromPathname(pathname: string): Locale {
+  const locale = pathname.match(new RegExp(`^/(${locales.join("|")})(?=/|$)`))?.[1];
+  return getLocale(locale);
+}
+
 export function localePathname(pathname: string): string {
   const path = pathname.replace(new RegExp(`^/(${locales.join("|")})(?=/|$)`), "");
   return path || "/";
@@ -22,6 +27,16 @@ export function localePathname(pathname: string): string {
 
 export function alternateLocalePath(locale: Locale, pathname: string): string {
   return localePath(locale, localePathname(pathname));
+}
+
+export function localePathFromPathname(locale: Locale, pathname: string): string {
+  return localePath(locale, localePathname(pathname));
+}
+
+export function legacyBlogPath(pathname: string): string | null {
+  const path = localePathname(pathname);
+  if (!path.startsWith("/blog")) return null;
+  return localePath(getLocaleFromPathname(pathname), path.replace(/^\/blog/, "/posts"));
 }
 
 export function getAlternateLocalePaths(pathname: string): Record<Locale, string> {

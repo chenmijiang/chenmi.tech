@@ -1,11 +1,10 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import type { Page } from "astro";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
-import { defaultLocale, type Locale } from "@/i18n/ui";
-import { stripTrailingSlash, t } from "@/i18n/utils";
+import { getLocale, localePathFromPathname } from "@/i18n/routing";
+import { t } from "@/i18n/utils";
 import LinkButton from "./LinkButton.astro";
 
 export interface Props {
@@ -13,12 +12,10 @@ export interface Props {
 }
 
 const { page } = Astro.props;
-const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const locale = getLocale(Astro.currentLocale);
 
 function getLocalizedUrl(url: string | undefined): string {
-  if (!url) return "/";
-  const path = url.toString().replace(/^\/(en|zh)\//, "/");
-  return stripTrailingSlash(getRelativeLocaleUrl(locale, path));
+  return url ? localePathFromPathname(locale, url) : localePathFromPathname(locale, "/");
 }
 ---
 

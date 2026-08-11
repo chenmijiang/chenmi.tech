@@ -5,6 +5,7 @@ import {
   getLocale,
   getRootLocaleRedirect,
   localePath,
+  localePathFromPathname,
   localePathname,
 } from "@/i18n/routing";
 
@@ -12,21 +13,26 @@ describe("locale routing", () => {
   it("uses the default locale for root and invalid locales", () => {
     expect(getLocale(undefined)).toBe("en");
     expect(getLocale("fr")).toBe("en");
-    expect(localePath("en", "")).toBe("/");
+    expect(localePath("en")).toBe("/");
   });
 
-  it("prefixes non-default locales without trailing slashes", () => {
-    expect(localePath("zh", "")).toBe("/zh");
+  it("prefixes non-default nested paths without trailing slashes", () => {
     expect(localePath("zh", "/posts/example/")).toBe("/zh/posts/example");
   });
 
-  it("switches nested paths between the site locales", () => {
+  it("normalizes prefixed pagination inputs for either locale", () => {
+    expect(localePathFromPathname("zh", "/zh/page/2/")).toBe("/zh/page/2");
+    expect(localePathFromPathname("en", "/zh/page/2/")).toBe("/page/2");
+  });
+
+  it("returns root alternates", () => {
+    expect(getAlternateLocalePaths("/")).toEqual({ en: "/", zh: "/zh" });
+  });
+
+  it("switches languages for nested paths and roots", () => {
     expect(localePathname("/zh/posts/example")).toBe("/posts/example");
-    expect(alternateLocalePath("en", "/zh/posts/example")).toBe("/posts/example");
-    expect(getAlternateLocalePaths("/posts/example/")).toEqual({
-      en: "/posts/example",
-      zh: "/zh/posts/example",
-    });
+    expect(alternateLocalePath("zh", "/posts/example/")).toBe("/zh/posts/example");
+    expect(alternateLocalePath("en", "/zh")).toBe("/");
   });
 
   it("redirects only the root to a non-default preference", () => {

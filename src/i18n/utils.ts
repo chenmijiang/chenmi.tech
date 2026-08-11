@@ -18,14 +18,6 @@ export function getCurrentLocale(locale: string | undefined): Locale {
   return locale && supportedLocales.includes(locale as Locale) ? (locale as Locale) : defaultLocale;
 }
 
-/**
- * Remove trailing slash from a path, except for the root "/".
- * Use this to wrap getRelativeLocaleUrl() output when trailingSlash is "never".
- */
-export function stripTrailingSlash(path: string): string {
-  return path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path;
-}
-
 const enMonthsShort = [
   "Jan",
   "Feb",

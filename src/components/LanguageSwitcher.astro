@@ -1,17 +1,12 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
 import { LOCALE_PREFERENCE_KEY } from "@/i18n/localePreference";
-import { defaultLocale, type Locale } from "@/i18n/ui";
-import { stripTrailingSlash } from "@/i18n/utils";
+import { alternateLocalePath, getLocale } from "@/i18n/routing";
+import type { Locale } from "@/i18n/ui";
 
-const currentLocale = (Astro.currentLocale || defaultLocale) as Locale;
+const currentLocale = getLocale(Astro.currentLocale);
 const alternateLocale: Locale = currentLocale === "en" ? "zh" : "en";
-
-const currentPath = Astro.url.pathname.replace(/^\/(en|zh)\//, "/");
-const alternatePath = stripTrailingSlash(
-  getRelativeLocaleUrl(alternateLocale, currentPath.slice(1))
-);
+const alternatePath = alternateLocalePath(alternateLocale, Astro.url.pathname);
 const alternateLabel = alternateLocale === "en" ? "English" : "中文";
 ---
 

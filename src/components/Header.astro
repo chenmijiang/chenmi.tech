@@ -4,7 +4,7 @@ import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconX from "@/assets/icons/IconX.svg";
 import { SITE } from "@/config";
-import { localePath } from "@/i18n/routing";
+import { localePath, localePathname } from "@/i18n/routing";
 import { defaultLocale } from "@/i18n/ui";
 import { t } from "@/i18n/utils";
 import Hr from "./Hr.astro";
@@ -12,7 +12,7 @@ import LanguageSwitcher from "./LanguageSwitcher.astro";
 import LinkButton from "./LinkButton.astro";
 
 const locale = (Astro.currentLocale || defaultLocale) as typeof defaultLocale;
-const currentPath = Astro.url.pathname.replace(/^\/(en|zh)\//, "/");
+const currentPath = localePathname(Astro.url.pathname);
 
 const isActive = (path: string) => {
   const currentPathArray = currentPath.split("/").filter((p) => p.trim());

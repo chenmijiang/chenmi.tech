@@ -1,8 +1,6 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
 import IconHash from "@/assets/icons/IconHash.svg";
-import { defaultLocale, type Locale } from "@/i18n/ui";
-import { stripTrailingSlash } from "@/i18n/utils";
+import { getLocale, localePath } from "@/i18n/routing";
 
 export interface Props {
   tag: string;
@@ -11,7 +9,7 @@ export interface Props {
 }
 
 const { tag, tagName, size = "sm" } = Astro.props;
-const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const locale = getLocale(Astro.currentLocale);
 ---
 
 <li
@@ -21,7 +19,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
   ]}
 >
   <a
-    href={stripTrailingSlash(getRelativeLocaleUrl(locale, `tags/${tag}`))}
+    href={localePath(locale, `tags/${tag}`)}
     transition:name={tag}
     class:list={[
       "relative pr-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1",
