@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import './typography.css';
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
 /* Font definitions */
 @font-face {
   font-family: 'Atkinson';
@@ -20,21 +18,12 @@
   font-display: swap;
 }
 
-:root,
-html[data-theme='light'] {
+:root {
   --background: #202f39;
   --foreground: #f6e4c8;
   --accent: #ff8a00;
   --muted: #2b5a6c;
   --border: #ff8a00;
-}
-
-html[data-theme='dark'] {
-  --background: #060607;
-  --foreground: #cbcbcb;
-  --accent: #f1bc53;
-  --muted: #22262f;
-  --border: #7a3917;
 }
 
 @theme {
@@ -53,23 +42,11 @@ html[data-theme='dark'] {
     scrollbar-color: var(--color-muted) transparent;
   }
 
-  /* View Transitions API for smooth theme switching (Safari 18+, Chrome 111+) */
-  :root {
-    view-transition-name: root;
-  }
-
-  /* Apply to html element as well for better compatibility */
+  :root,
   html {
     view-transition-name: root;
   }
 
-  /* Ensure smooth transition between light and dark themes */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.25s;
-  }
-
-  /* Customize the transition style */
   ::view-transition-old(root) {
     animation: fade-out 0.25s ease-out;
   }

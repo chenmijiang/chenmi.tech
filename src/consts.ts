@@ -13,7 +13,6 @@ interface Site {
   desc: string;
   title: string;
   ogImage: string;
-  lightAndDarkMode: boolean;
   postPerIndex: number;
   postPerPage: number;
   scheduledPostMargin: number;
@@ -37,7 +36,6 @@ export const SITE: Site = {
   desc: "Full-stack developer building scalable web applications with React, TypeScript, Node.js, and a growing focus on Rust, Docker, and AI.",
   title: "chenmi",
   ogImage: "chen-mi-avatar.jpg",
-  lightAndDarkMode: true,
   postPerIndex: 10,
   postPerPage: 10,
   scheduledPostMargin: 15 * 60 * 1000,
