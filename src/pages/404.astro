@@ -1,14 +1,13 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import { SITE } from "@/config";
-import { defaultLocale, type Locale } from "@/i18n/ui";
-import { stripTrailingSlash, t } from "@/i18n/utils";
+import { getLocale, localePath } from "@/i18n/routing";
+import { t } from "@/i18n/utils";
 import Layout from "@/layouts/Layout.astro";
 
-const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const locale = getLocale(Astro.currentLocale);
 ---
 
 <Layout title={`404 Not Found | ${SITE.title}`} description={t(locale, "notFound.description")}>
@@ -23,7 +22,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       <span aria-hidden="true">¯\_(ツ)_/¯</span>
       <p class="mt-4 text-2xl sm:text-3xl">{t(locale, "notFound.title")}</p>
       <LinkButton
-        href={stripTrailingSlash(getRelativeLocaleUrl(locale, ""))}
+        href={localePath(locale)}
         class="my-6 text-lg underline decoration-dashed underline-offset-8"
       >
         {t(locale, "home.goHome")}

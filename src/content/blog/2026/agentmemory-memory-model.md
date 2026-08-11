@@ -1,9 +1,8 @@
 ---
-title: '探究 agentmemory 记忆分层思想'
-description: 'agentmemory 借用了认知科学的 working、episodic、semantic、procedural 四个词，但它不是把人类记忆搬进代码，而是按 agent 的工作流重新切了边界——保存经历、沉淀知识、组织行动，再把经验用回下一次行动。'
+title: "探究 agentmemory 记忆分层思想"
+description: "agentmemory 借用了认知科学的 working、episodic、semantic、procedural 四个词，但它不是把人类记忆搬进代码，而是按 agent 的工作流重新切了边界——保存经历、沉淀知识、组织行动，再把经验用回下一次行动。"
 pubDatetime: 2026-06-03T12:00:00+08:00
-tags: ['ai', 'engineering', 'agentmemory', 'memory']
-featured: true
+tags: ["ai", "engineering", "agentmemory", "memory"]
 draft: false
 ---
 

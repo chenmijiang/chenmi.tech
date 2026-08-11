@@ -1,4 +1,4 @@
-import { defaultLocale, type Locale, ui } from "./ui";
+import { type Locale, ui } from "./ui";
 
 export const LOCALE_PREFERENCE_KEY = "locale-preference";
 
@@ -20,24 +20,4 @@ export function getLocalePreference(storage: StorageLike): Locale | null {
 
 export function saveLocalePreference(storage: WritableStorageLike, locale: Locale): void {
   storage.setItem(LOCALE_PREFERENCE_KEY, locale);
-}
-
-export function getRootLocaleRedirect({
-  pathname,
-  navigatorLanguage,
-  storedLocale,
-}: {
-  pathname: string;
-  navigatorLanguage?: string;
-  storedLocale?: string | null;
-}): string | null {
-  if (pathname !== "/" && pathname !== "") {
-    return null;
-  }
-
-  if (isLocale(storedLocale)) {
-    return storedLocale === defaultLocale ? null : `/${storedLocale}`;
-  }
-
-  return navigatorLanguage?.toLowerCase().startsWith("zh") ? "/zh" : null;
 }

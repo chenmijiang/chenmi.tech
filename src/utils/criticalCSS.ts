@@ -44,20 +44,12 @@ export const criticalCSS = `
     height: auto;
   }
   
-  /* Dark mode critical styles */
+  /* Critical theme colors */
   :root {
     --background: 253 253 253;
     --foreground: 17 24 35;
     --muted: 246 246 246;
     --accent: 0 108 172;
-    --accent-dark: 255 107 1;
-  }
-  
-  .dark {
-    --background: 18 24 27;
-    --foreground: 253 253 253;
-    --muted: 30 41 49;
-    --accent: 255 107 1;
   }
   
   /* Critical color classes */
@@ -132,12 +124,6 @@ export const criticalCSS = `
   /* Hide elements until JS loads */
   .no-js-hide {
     display: none;
-  }
-  
-  /* Prevent layout shift */
-  #theme-btn {
-    width: 2rem;
-    height: 2rem;
   }
   
   /* Header critical styles */

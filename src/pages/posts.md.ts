@@ -1,11 +1,10 @@
 import { getCollection } from "astro:content";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import type { APIRoute } from "astro";
-import { defaultLocale } from "@/i18n/ui";
+import { getLocale, localePath } from "@/i18n/routing";
 import getSortedPosts from "@/utils/getSortedPosts";
 
 export const GET: APIRoute = async ({ currentLocale }) => {
-  const locale = currentLocale || defaultLocale;
+  const locale = getLocale(currentLocale);
   const posts = await getCollection("blog");
   const sortedPosts = getSortedPosts(posts);
 
@@ -33,13 +32,13 @@ export const GET: APIRoute = async ({ currentLocale }) => {
         month: "short",
         day: "numeric",
       });
-      markdownContent += `- ${date}: [${post.data.title}](${getRelativeLocaleUrl(locale, `posts/${post.id}.md`)})\n`;
+      markdownContent += `- ${date}: [${post.data.title}](${localePath(locale, `posts/${post.id}.md`)})\n`;
     }
 
     markdownContent += "\n";
   }
 
-  markdownContent += `---\n\n[Back to Home](${getRelativeLocaleUrl(locale, "index.md")})`;
+  markdownContent += `---\n\n[Back to Home](${localePath(locale, "index.md")})`;
 
   return new Response(markdownContent, {
     status: 200,

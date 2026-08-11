@@ -9,7 +9,6 @@ export const ui = {
       backToTop: "Back to Top",
       openMenu: "Open Menu",
       closeMenu: "Close Menu",
-      toggleTheme: "Toggles light & dark",
       archives: "Archives",
     },
     pagination: {
@@ -105,7 +104,6 @@ export const ui = {
       backToTop: "回到顶部",
       openMenu: "打开菜单",
       closeMenu: "关闭菜单",
-      toggleTheme: "切换亮色/暗色模式",
       archives: "归档",
     },
     pagination: {

@@ -12,9 +12,9 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
 const activeSocials = SOCIALS.filter(({ active, href }) => active && href).slice(0, 3);
 ---
 
-<div class={variant === 'default' ? 'newsletter-box bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg p-6 my-8' : 'newsletter-compact mt-6'}>
+<div class={variant === 'default' ? 'newsletter-box bg-gray-50 border border-gray-200 rounded-lg p-6 my-8' : 'newsletter-compact mt-6'}>
   {variant === 'default' && (
-    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+    <p class="text-sm text-gray-600 mb-4">
       {t(locale, "newsletter.followAlong")} {SITE.title}.
     </p>
   )}
@@ -25,7 +25,7 @@ const activeSocials = SOCIALS.filter(({ active, href }) => active && href).slice
           href={social.href}
           target={social.href.startsWith("http") ? "_blank" : undefined}
           rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
-          class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm hover:border-accent hover:text-accent dark:border-gray-600"
+          class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm hover:border-accent hover:text-accent"
         >
           {social.name}
         </a>
@@ -34,7 +34,7 @@ const activeSocials = SOCIALS.filter(({ active, href }) => active && href).slice
   </div>
   
   {variant === 'default' && (
-    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
+    <p class="text-xs text-gray-500 mt-3">
       {t(locale, "newsletter.noNewsletter")}
     </p>
   )}

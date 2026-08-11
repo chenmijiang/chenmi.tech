@@ -1,7 +1,9 @@
 ---
 import { ViewTransitions } from "astro:transitions";
 import { SITE } from "@/config";
+import { getLocale } from "@/i18n/routing";
 import "@/styles/global.css";
+import { getPageMetadata } from "@/utils/pageMetadata";
 
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 
@@ -20,42 +22,31 @@ export interface Props {
 const {
   title = SITE.title,
   author = SITE.author,
-  profile = SITE.profile,
   description = SITE.desc,
-  ogImage = SITE.ogImage ? `/${SITE.ogImage}` : "/og.png",
-  canonicalURL = new URL(Astro.url.pathname, Astro.url),
+  ogImage,
+  canonicalURL,
   pubDatetime,
   modDatetime,
   scrollSmooth = false,
 } = Astro.props;
 
-const socialImageURL = new URL(ogImage, Astro.url);
-
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  headline: `${title}`,
-  image: `${socialImageURL}`,
-  datePublished: `${pubDatetime?.toISOString()}`,
-  ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-  author: [
-    {
-      "@type": "Person",
-      name: `${author}`,
-      ...(profile && { url: profile }),
-    },
-  ],
-};
+const locale = getLocale(Astro.currentLocale);
+const metadata = getPageMetadata({
+  url: Astro.url,
+  canonicalURL,
+  ogImage,
+  siteOgImage: SITE.ogImage ? `/${SITE.ogImage}` : undefined,
+});
 ---
 
 <!doctype html>
-<html lang={Astro.currentLocale || "en"} class={`${scrollSmooth && "scroll-smooth"}`}>
+<html lang={locale} class={`${scrollSmooth && "scroll-smooth"}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="view-transition" content="same-origin" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="canonical" href={canonicalURL} data-pagefind-meta="url[href]" />
+    <link rel="canonical" href={metadata.canonical} data-pagefind-meta="url[href]" />
     <meta name="generator" content={Astro.generator} />
 
     <!-- General Meta Tags -->
@@ -65,25 +56,14 @@ const structuredData = {
     <meta name="author" content={author} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    {(() => {
-      const pathname = Astro.url.pathname;
-      const enPath = pathname.replace(/^\/zh(\/|$)/, "/");
-      const zhPath = pathname.startsWith("/zh")
-        ? pathname
-        : `/zh${pathname === "/" ? "" : pathname}`;
-      return (
-        <>
-          <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.url)} />
-          <link rel="alternate" hreflang="zh" href={new URL(zhPath, Astro.url)} />
-        </>
-      );
-    })()}
+    <link rel="alternate" hreflang="en" href={metadata.alternates.en} />
+    <link rel="alternate" hreflang="zh" href={metadata.alternates.zh} />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:url" content={metadata.canonical} />
+    <meta property="og:image" content={metadata.image} />
 
     <!-- Article Published/Modified time -->
     {
@@ -105,17 +85,10 @@ const structuredData = {
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:url" content={metadata.canonical} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={socialImageURL} />
-
-    <!-- Google JSON-LD Structured data -->
-    <script
-      type="application/ld+json"
-      is:inline
-      set:html={JSON.stringify(structuredData)}
-    />
+    <meta property="twitter:image" content={metadata.image} />
 
     <!-- Enable RSS feed auto-discovery  -->
     <!-- https://docs.astro.build/en/recipes/rss/#enabling-rss-feed-auto-discovery -->
@@ -126,7 +99,7 @@ const structuredData = {
       href={`${SITE.website}rss.xml`}
     />
 
-    <meta name="theme-color" content="" />
+    <meta name="theme-color" content="#202f39" />
 
     {
       // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
@@ -142,10 +115,9 @@ const structuredData = {
 
     <ViewTransitions />
 
-    <script is:inline src="/toggle-theme.js"></script>
-
     <script>
-      import { getLocalePreference, getRootLocaleRedirect } from "@/i18n/localePreference";
+      import { getLocalePreference } from "@/i18n/localePreference";
+      import { getRootLocaleRedirect } from "@/i18n/routing";
 
       const redirectPath = getRootLocaleRedirect({
         pathname: window.location.pathname,

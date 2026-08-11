@@ -1,20 +1,17 @@
-	---
-	import { getCollection } from "astro:content";
-	import type { GetStaticPathsOptions } from "astro";
-	import { getRelativeLocaleUrl } from "astro:i18n";
-	import FormattedDate from "../../components/FormattedDate.astro";
-	import { SITE } from "../../consts";
-	import { defaultLocale, type Locale } from "@/i18n/ui";
-	import { stripTrailingSlash, t } from "@/i18n/utils";
-	import Layout from "../../layouts/Layout.astro";
+---
+import { getCollection } from "astro:content";
+import type { GetStaticPathsOptions } from "astro";
+import { getLocale, localePath } from "@/i18n/routing";
+import { t } from "@/i18n/utils";
+import FormattedDate from "../../components/FormattedDate.astro";
+import { SITE } from "../../consts";
+import Layout from "../../layouts/Layout.astro";
 
-	export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-	  const allPosts = await getCollection("blog");
-
-  // Deduplicate posts by id if there are any duplicates
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const allPosts = await getCollection("blog");
   const idMap = new Map();
+
   allPosts.forEach((post) => {
-    // If we already have a post with this id, only keep the newer one
     if (
       !idMap.has(post.id) ||
       new Date(post.data.pubDatetime) > new Date(idMap.get(post.id).data.pubDatetime)
@@ -23,46 +20,48 @@
     }
   });
 
-	  // Convert back to array and sort
-	  const sortedPosts = Array.from(idMap.values()).sort((a, b) => {
-	    const dateA = a.data.pubDatetime.valueOf();
-	    const dateB = b.data.pubDatetime.valueOf();
-	    return dateB - dateA;
-	  });
+  const sortedPosts = Array.from(idMap.values()).sort((a, b) => {
+    const dateA = a.data.pubDatetime.valueOf();
+    const dateB = b.data.pubDatetime.valueOf();
+    return dateB - dateA;
+  });
 
   return paginate(sortedPosts, { pageSize: 10 });
 }
 
 const { page } = Astro.props;
 const { data: posts, currentPage, lastPage } = page;
-const locale = (Astro.currentLocale || defaultLocale) as Locale;
+const locale = getLocale(Astro.currentLocale);
 ---
 
-<Layout title={`${t(locale, "pagination.page")} ${currentPage} ${t(locale, "pagination.pageSuffix")}| ${SITE.title}`} description={SITE.desc}>
+<Layout
+  title={`${t(locale, "pagination.page")} ${currentPage} ${t(locale, "pagination.pageSuffix")}| ${SITE.title}`}
+  description={SITE.desc}
+>
   <section class="py-8">
-    <h1 class="text-4xl font-bold tracking-tight mb-10">{t(locale, "pagination.latestPosts")}</h1>
+    <h1 class="text-4xl font-bold tracking-tight mb-10">
+      {t(locale, "pagination.latestPosts")}
+    </h1>
 
     <div class="space-y-12">
       {
         posts.map((post) => (
           <article class="border-b border-border pb-8 last:border-0">
             <h2 class="text-2xl font-semibold leading-tight mb-2">
-              <a href={stripTrailingSlash(getRelativeLocaleUrl(locale, `posts/${post.id}`))} class="hover:text-primary">
+              <a href={localePath(locale, `posts/${post.id}`)} class="hover:text-primary">
                 {post.data.title}
               </a>
             </h2>
 
-	            <div class="flex items-center text-sm text-muted-foreground mb-4">
-	              <FormattedDate date={post.data.pubDatetime} />
-	            </div>
+            <div class="flex items-center text-sm text-muted-foreground mb-4">
+              <FormattedDate date={post.data.pubDatetime} />
+            </div>
 
-            {post.data.description && (
-              <p class="text-muted-foreground mb-4">{post.data.description}</p>
-            )}
+            {post.data.description && <p class="text-muted-foreground mb-4">{post.data.description}</p>}
 
             <div>
               <a
-                href={stripTrailingSlash(getRelativeLocaleUrl(locale, `posts/${post.id}`))}
+                href={localePath(locale, `posts/${post.id}`)}
                 class="text-primary font-medium hover:underline"
               >
                 {t(locale, "pagination.readMore")} →
@@ -77,7 +76,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       {
         currentPage > 1 && (
           <a
-            href={currentPage - 1 === 1 ? stripTrailingSlash(getRelativeLocaleUrl(locale, "")) : stripTrailingSlash(getRelativeLocaleUrl(locale, `page/${currentPage - 1}`))}
+            href={currentPage - 1 === 1 ? localePath(locale) : localePath(locale, `page/${currentPage - 1}`)}
             class="px-4 py-2 bg-secondary rounded-md hover:bg-accent"
           >
             ← {t(locale, "pagination.previous")}
@@ -88,7 +87,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       {
         Array.from({ length: lastPage }).map((_, i) => (
           <a
-            href={i === 0 ? stripTrailingSlash(getRelativeLocaleUrl(locale, "")) : stripTrailingSlash(getRelativeLocaleUrl(locale, `page/${i + 1}`))}
+            href={i === 0 ? localePath(locale) : localePath(locale, `page/${i + 1}`)}
             class={`px-4 py-2 rounded-md ${
               currentPage === i + 1
                 ? "bg-primary text-primary-foreground"
@@ -103,7 +102,7 @@ const locale = (Astro.currentLocale || defaultLocale) as Locale;
       {
         currentPage < lastPage && (
           <a
-            href={stripTrailingSlash(getRelativeLocaleUrl(locale, `page/${currentPage + 1}`))}
+            href={localePath(locale, `page/${currentPage + 1}`)}
             class="px-4 py-2 bg-secondary rounded-md hover:bg-accent"
           >
             {t(locale, "pagination.next")} →

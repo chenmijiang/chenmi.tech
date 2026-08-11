@@ -1,23 +1,18 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
 import IconGlobe from "@/assets/icons/IconGlobe.svg";
 import { LOCALE_PREFERENCE_KEY } from "@/i18n/localePreference";
-import { defaultLocale, type Locale } from "@/i18n/ui";
-import { stripTrailingSlash } from "@/i18n/utils";
+import { getLocale, localePathFromPathname } from "@/i18n/routing";
+import type { Locale } from "@/i18n/ui";
 
-const currentLocale = (Astro.currentLocale || defaultLocale) as Locale;
+const currentLocale = getLocale(Astro.currentLocale);
 const alternateLocale: Locale = currentLocale === "en" ? "zh" : "en";
-
-const currentPath = Astro.url.pathname.replace(/^\/(en|zh)\//, "/");
-const alternatePath = stripTrailingSlash(
-  getRelativeLocaleUrl(alternateLocale, currentPath.slice(1))
-);
+const alternatePath = localePathFromPathname(alternateLocale, Astro.url.pathname);
 const alternateLabel = alternateLocale === "en" ? "English" : "中文";
 ---
 
 <a
   href={alternatePath}
-  class="rounded-md p-2 text-gray-600 dark:text-gray-300 transition-colors hover:bg-secondary hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none"
+  class="rounded-md p-2 text-gray-600 transition-colors hover:bg-secondary hover:text-gray-900 focus:outline-none"
   aria-label={`Switch to ${alternateLabel}`}
   title={`Switch to ${alternateLabel}`}
   onclick={`localStorage.setItem('${LOCALE_PREFERENCE_KEY}','${alternateLocale}')`}

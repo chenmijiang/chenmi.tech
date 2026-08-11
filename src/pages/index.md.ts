@@ -1,9 +1,8 @@
-import { getRelativeLocaleUrl } from "astro:i18n";
 import type { APIRoute } from "astro";
-import { defaultLocale } from "@/i18n/ui";
+import { getLocale, localePath } from "@/i18n/routing";
 
 export const GET: APIRoute = async ({ currentLocale }) => {
-  const locale = currentLocale || defaultLocale;
+  const locale = getLocale(currentLocale);
 
   const markdownContent = `# chenmi
 
@@ -11,8 +10,8 @@ Full-stack developer building scalable web applications with React, TypeScript, 
 
 ## Navigation
 
-- [About](${getRelativeLocaleUrl(locale, "about")})
-- [Recent Posts](${getRelativeLocaleUrl(locale, "posts")})
+- [About](${localePath(locale, "about")})
+- [Recent Posts](${localePath(locale, "posts")})
 - [RSS Feed](/rss.xml)
 
 ## Links

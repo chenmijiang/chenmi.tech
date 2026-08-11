@@ -1,8 +1,9 @@
 ---
-title: 'Matt Pocock Skills：整套设计只为一个目标'
-description: 'Matt Pocock 的 AI 编码 skill 通过原语、人工编排、中间产物和共享状态，让 AI 编码流程变得可预测。'
+title: "Matt Pocock Skills：整套设计只为一个目标"
+description: "Matt Pocock 的 AI 编码 skill 通过原语、人工编排、中间产物和共享状态，让 AI 编码流程变得可预测。"
 pubDatetime: 2026-07-13T00:00:00+08:00
-tags: ['ai', 'engineering']
+tags: ["ai", "engineering"]
+featured: true
 draft: false
 ---
 

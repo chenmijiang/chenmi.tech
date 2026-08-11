@@ -1,9 +1,8 @@
 ---
-title: '复杂项目里，AI 最强的地方不是最难的地方'
+title: "复杂项目里，AI 最强的地方不是最难的地方"
 description: '编程正在从"终点能力"变成"前提能力"——你依然需要懂代码，因为不懂就无法审查 AI 的产出；但光会写代码已经不够了。真正拉开差距的是四件事：定义问题、评估方案、识别失控点、在高速度中保持判断力。'
 pubDatetime: 2026-03-22T00:00:00+08:00
-tags: ['ai', 'engineering']
-featured: true
+tags: ["ai", "engineering"]
 draft: false
 ---
 
