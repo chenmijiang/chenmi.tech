@@ -11,6 +11,7 @@
     "deploy": "scripts/deploy.sh",
     "add-source-metadata": "node scripts/add-source-metadata.mjs",
     "remove-tags": "node scripts/remove-tags-from-posts.mjs",
+    "images:compress": "node scripts/compress-images.mjs",
     "sync": "astro sync",
     "lint": "biome lint src",
     "lint:fix": "biome lint --write src",

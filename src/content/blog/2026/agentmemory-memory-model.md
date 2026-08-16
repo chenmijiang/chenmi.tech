@@ -14,7 +14,7 @@ draft: false
 
 这也是读这套系统时最容易混淆的地方。认知科学给了一个好理解的入口，但真正决定 agentmemory 怎么分层的，是 agent 的工作流。
 
-<img src="https://cdn.nlark.com/yuque/0/2026/png/38446884/1780397490661-1194daac-2bd2-4a7d-9ba6-493964907a18.png" width="800.0000211927631" title="agentmemory web viewer" crop="0,0,1,1" id="goYg2" class="ne-image">
+![agentmemory](/assets/img/2026/agentmemory.webp)
 
 ## working：当前上下文
 
